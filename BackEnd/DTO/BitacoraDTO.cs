@@ -19,6 +19,10 @@
         // Campo adicional para el nombre de la escuela y proveedor
         public string? NombreCompleto { get; set; }
 
-        public string? NombreEscuela { get; set; }
+        public string? NombreEscuela { get; set; } 
+
+
+
+
     }
 }
