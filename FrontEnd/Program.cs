@@ -1,7 +1,10 @@
 using FrontEnd.Helpers.Implementations;
 using FrontEnd.Helpers.Interfaces;
 
+
 var builder = WebApplication.CreateBuilder(args);
+
+
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
@@ -9,6 +12,12 @@ builder.Services.AddControllersWithViews();
 builder.Services.AddHttpClient<IServiceRepository, ServiceRepository>();
 builder.Services.AddScoped<IServiceRepository, ServiceRepository>();
 builder.Services.AddScoped<IEscuelaHelper, EscuelaHelper>();
+builder.Services.AddScoped<IPedidoHelper, PedidoHelper>();
+builder.Services.AddScoped<IProductoHelper, ProductoHelper>();
+builder.Services.AddScoped<IProductoDiaHelper, ProductoDiaHelper>();
+builder.Services.AddScoped<IProveedorHelper, ProveedorHelper>();
+builder.Services.AddScoped<IUsuarioHelper, UsuarioHelper>();
+builder.Services.AddScoped<IEstadoPedidoHelper, EstadoPedidoHelper>();
 
 var app = builder.Build();
 
@@ -28,3 +37,5 @@ app.MapControllerRoute(
     pattern: "{controller=Home}/{action=Index}/{id?}");
 
 app.Run();
+
+

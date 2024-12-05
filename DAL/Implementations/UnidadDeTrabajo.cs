@@ -55,15 +55,15 @@ namespace DAL.Implementations
         {
             try
             {
-                _sisComedorContext.SaveChanges();
-                return true;
+                return _sisComedorContext.SaveChanges() > 0;
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-
+                Console.WriteLine($"Error al guardar cambios: {ex.Message}");
                 return false;
             }
         }
+
 
         public void Dispose()
         {

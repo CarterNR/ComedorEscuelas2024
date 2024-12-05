@@ -1,7 +1,9 @@
 ﻿using BackEnd.DTO;
 using BackEnd.Services.Interfaces;
+using DAL.Implementations;
 using DAL.Interfaces;
 using Entities.Entities;
+using Microsoft.EntityFrameworkCore;
 
 namespace BackEnd.Services.Implementations
 {
@@ -17,19 +19,7 @@ namespace BackEnd.Services.Implementations
 
 
         #region
-        Producto Convertir(ProductoDTO producto)
-        {
-            return new Producto
-            {
-                IdProducto = producto.IdProducto,
-                NombreProducto = producto.NombreProducto,
-                Cantidad = producto.Cantidad,
-                Estado = producto.Estado,
-                Imagen = producto.Imagen,
-                IdEscuela = producto.IdEscuela,
-                IdProveedor = producto.IdProveedor
-            };
-        }
+
 
         ProductoDTO Convertir(Producto producto)
         {
@@ -49,27 +39,86 @@ namespace BackEnd.Services.Implementations
 
 
 
-
-        public bool Agregar(ProductoDTO producto)
+        public void Agregar(ProductoDTO producto)
         {
-            Producto entity = Convertir(producto);
-            Unidad.ProductoDAL.Add(entity);
-            return Unidad.Complete();
+            if (producto == null)
+                throw new ArgumentNullException(nameof(producto));
+
+            var entidad = new Producto
+            {
+                IdProducto = producto.IdProducto,
+                NombreProducto = producto.NombreProducto,
+                Cantidad = producto.Cantidad,
+                Imagen = producto.Imagen, // Asegúrate de que sea un byte[]
+                Estado = producto.Estado,
+                IdProveedor = producto.IdProveedor,
+                IdEscuela = producto.IdEscuela
+            };
+
+            context.Productos.Add(entidad); // Usa 'context' aquí
+            context.SaveChanges();
         }
+
+
 
         public bool Editar(ProductoDTO producto)
         {
-            var entity = Convertir(producto);
-            Unidad.ProductoDAL.Update(entity);
+            // Convertir el DTO en la entidad Producto
+            var productoEntity = ConvertirAEntidad(producto);
+
+            // Actualizar la entidad en la base de datos
+            Unidad.ProductoDAL.Update(productoEntity);
+
+            // Guardar los cambios
             return Unidad.Complete();
         }
 
-        public bool Eliminar(ProductoDTO producto)
+        private Producto ConvertirAEntidad(ProductoDTO productoDTO)
         {
-            var entity = Convertir(producto);
-            Unidad.ProductoDAL.Remove(entity);
-            return Unidad.Complete();
+            return new Producto
+            {
+                IdProducto = productoDTO.IdProducto,
+                NombreProducto = productoDTO.NombreProducto,
+                Imagen = productoDTO.Imagen,  // Guardar la imagen en la base de datos
+                IdProveedor = productoDTO.IdProveedor,
+                IdEscuela = productoDTO.IdEscuela,
+                Cantidad = productoDTO.Cantidad,
+                Estado = productoDTO.Estado
+            };
         }
+
+
+
+
+        public bool Eliminar(ProductoDTO productoDTO)
+        {
+            try
+            {
+                var producto = Convertir(productoDTO);
+                var existente = Unidad.ProductoDAL.Get(producto.IdProducto);
+
+                if (existente == null)
+                {
+                    Console.WriteLine($"Producto con ID {producto.IdProducto} no encontrado.");
+                    return false;
+                }
+
+                var eliminado = Unidad.ProductoDAL.Remove(existente);
+                if (eliminado)
+                {
+                    return Unidad.Complete();
+                }
+                return false;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error eliminando producto: {ex.Message}");
+                return false;
+            }
+        }
+
+
+
 
         public ProductoDTO Obtener(int id)
         {

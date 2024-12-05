@@ -1,0 +1,91 @@
+﻿@model FrontEnd.Models.ProductoDiaViewModel
+
+@{
+    ViewData["Title"] = "Details";
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>@ViewData["Title"]</title>
+
+    <link rel="shortcut icon" href="/images/favicon.ico" />
+    <link rel="stylesheet" href="/css/backend-plugin.min.css">
+    <link rel="stylesheet" href="/css/backend.css?v=1.0.0">
+    <link rel="stylesheet" href="/vendor/fortawesome/fontawesome-free/css/all.min.css">
+    <link rel="stylesheet" href="/vendor/line-awesome/dist/line-awesome/css/line-awesome.min.css">
+    <link rel="stylesheet" href="/vendor/remixicon/fonts/remixicon.css">
+</head>
+
+<body>
+
+    <div class="content-page">
+        <div class="container-fluid add-form-list">
+            <div class="row">
+                <div class="col-sm-12">
+                    <div class="card">
+                        <div class="card-header d-flex justify-content-between">
+                            <div class="header-title d-flex align-items-center">
+                                <a asp-action="Index" class="btn btn-info mr-2">
+                                    <i class="fas fa-arrow-left"></i>
+                                </a>
+                                <h4 class="card-title mb-0">Detalles del producto</h4>
+                            </div>
+
+
+
+                        </div>
+                        <div class="card-body">
+
+                            <dl class="row">
+                                <dt class = "col-sm-2">
+                                <label>ID Producto Día</label>
+                                </dt>
+                              
+                                <dd class="col-sm-10">
+                                    @Html.DisplayFor(model => model.IdProductoDia)
+                                </dd>
+                                <dt class = "col-sm-2">
+                                <label>Producto</label>
+                                </dt>
+                                <dd class="col-sm-10">
+                                    @Html.DisplayFor(model => model.NombreProducto)
+                                </dd>
+                                <dt class="col-sm-2">
+                                    <label>Cantidad</label>
+                                </dt>
+                                <dd class="col-sm-10">
+                                    @Html.DisplayFor(model => model.Cantidad)
+                                </dd>
+                                <dt class="col-sm-2">
+                                    <label>Fecha</label>
+                                </dt>
+                                <dd class="col-sm-10">
+                                    @Html.DisplayFor(model => model.Fecha)
+                                </dd>
+                                <dt class="col-sm-2">
+                                    <label>Estado</label>
+                                </dt>
+                                <dd class="col-sm-10">
+                                    @Html.DisplayFor(model => model.Estado)
+                                </dd>
+                                <dt class="col-sm-2">
+                                    <label>Escuela</label>
+                                </dt>
+                                <dd class="col-sm-10">
+                                    @Html.DisplayFor(model => model.NombreEscuela)
+                                </dd>
+                               
+                            </dl>
+
+
+                        </div>
+
+                        </div>
+ 
+
+</body>
+</html>

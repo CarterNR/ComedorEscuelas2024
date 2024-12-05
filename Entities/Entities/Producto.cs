@@ -19,6 +19,8 @@ public partial class Producto
 
     public int? IdEscuela { get; set; }
 
+
+
     public virtual Escuela? IdEscuelaNavigation { get; set; }
 
     public virtual Proveedore? IdProveedorNavigation { get; set; }

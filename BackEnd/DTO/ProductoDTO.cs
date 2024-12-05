@@ -22,5 +22,7 @@
         public string? NombreProveedor { get; set; }
 
         public string? NombreEscuela { get; set; }
+
+
     }
 }

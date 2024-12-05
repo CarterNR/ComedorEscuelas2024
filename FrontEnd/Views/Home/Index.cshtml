@@ -1,8 +1,119 @@
-﻿@{
-    ViewData["Title"] = "Home Page";
-}
+﻿@model List<ProductoViewModel>
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+
+<div class="content-page">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-lg-4">
+                <div class="card card-transparent card-block card-stretch card-height border-none">
+                    <div class="card-body p-0 mt-lg-2 mt-0">
+                        <a href="../backend/index.html" class="header-logo">
+                            <h4 class="logo-title light-logo ml-3">¡Bienvenido al comedor!</h4>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-8">
+                <div class="row">
+                    <div class="col-lg-4 col-md-4">
+                        <div class="card card-block card-stretch card-height" style="cursor: pointer;" onclick="location.href='/ProductoDia/Index';">
+                            <div class="card-body">
+                                <div class="d-flex align-items-center mb-4 card-total-sale">
+                                    <div class="icon iq-icon-box-2 bg-info-light">
+                                        <img src="../images/productosdia.png" class="img-fluid" alt="image">
+                                    </div>
+                                    <div>
+                                        <p class="mb-2">Productos</p>
+                                        <p class="mb-2">del día</p>
+
+                                    </div>
+                                </div>
+                                <div class="iq-progress-bar mt-2">
+                                    <span class="bg-info iq-progress progress-1" data-percent="85">
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-4 col-md-4">
+                        <div class="card card-block card-stretch card-height" style="cursor: pointer;" onclick="location.href='/Producto/Index';">
+                            <div class="card-body">
+                                <div class="d-flex align-items-center mb-4 card-total-sale">
+                                    <div class="icon iq-icon-box-2 bg-danger-light">
+                                        <img src="../images/productos.png" class="img-fluid" alt="image">
+                                    </div>
+                                    <div>
+                                        <p class="mb-2">Productos</p>
+                                    </div>
+                                </div>
+                                <div class="iq-progress-bar mt-2">
+                                    <span class="bg-danger iq-progress progress-1" data-percent="70">
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-4 col-md-4">
+                        <div class="card card-block card-stretch card-height" style="cursor: pointer;" onclick="location.href='/Pedido/Index';">
+                            <div class="card-body">
+                                <div class="d-flex align-items-center mb-4 card-total-sale">
+                                    <div class="icon iq-icon-box-2 bg-success-light">
+                                        <img src="../images/pedidos.png" class="img-fluid" alt="image">
+                                    </div>
+                                    <div>
+                                        <p class="mb-2">Pedidos</p>
+                                    </div>
+                                </div>
+                                <div class="iq-progress-bar mt-2">
+                                    <span class="bg-success iq-progress progress-1" data-percent="75">
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-12">
+                <div class="card card-block card-stretch card-height">
+                    <div class="card-header d-flex align-items-center justify-content-between">
+                        <div class="header-title">
+                            <h4 class="card-title">Productos</h4>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <ul class="list-unstyled row top-product mb-0 justify-content-center">
+                            @foreach (var producto in Model)
+                            {
+                                <li class="col-lg-2 col-md-3 col-sm-4 col-6 mb-2">
+                                    <div class="card product-card-compact">
+                                        <div class="card-body p-1">
+                                            <div class="bg-warning-light rounded text-center">
+                                                @if (producto.Imagen != null)
+                                                {
+                                                    <img src="data:image/jpeg;base64,@Convert.ToBase64String(producto.Imagen)"
+                                                         class="style-img img-fluid p-1 compact-img" alt="@producto.NombreProducto">
+                                                }
+                                                else
+                                                {
+                                                    <img src="../assets/images/product/default.png"
+                                                         class="style-img img-fluid p-1 compact-img" alt="default-image">
+                                                }
+                                            </div>
+                                            <div class="style-text text-center mt-1">
+                                                <h6 class="mb-1 text-truncate compact-text">@producto.NombreProducto</h6>
+                                                <p class="mb-0 text-truncate compact-text">@producto.Cantidad</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </li>
+                            }
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+
+            
+    </div>
 </div>
+    </div>

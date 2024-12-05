@@ -46,6 +46,7 @@ namespace DAL.Implementations
             return _sisComedorContext.Set<TEntity>().ToList();
         }
 
+
         public bool Remove(TEntity entity)
         {
             try
@@ -54,12 +55,14 @@ namespace DAL.Implementations
                 _sisComedorContext.Set<TEntity>().Remove(entity);
                 return true;
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-
+                Console.WriteLine($"Error eliminando entidad: {ex.Message}");
                 return false;
             }
         }
+
+
 
         public bool Update(TEntity entity)
         {
