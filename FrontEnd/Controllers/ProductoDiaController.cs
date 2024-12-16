@@ -1,6 +1,7 @@
 ﻿using FrontEnd.Helpers.Implementations;
 using FrontEnd.Helpers.Interfaces;
 using FrontEnd.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -22,6 +23,8 @@ namespace FrontEnd.Controllers
             _escuelaHelper = escuelaHelper;
         }
         // GET: ProductoDiaController
+
+        [Authorize(Roles = "Admin, Producto")]
         public ActionResult Index()
         {
             var listaProductoDia = _productodiaHelper.GetProductosDia();
@@ -40,7 +43,7 @@ namespace FrontEnd.Controllers
             return View(listaProductoDia);
         }
 
-
+        [Authorize(Roles = "Admin, Producto")]
         // GET: ProductoDiaController/Details/5
         public ActionResult Details(int id)
         {
@@ -62,7 +65,7 @@ namespace FrontEnd.Controllers
             return View(productodia);  
         }
 
-
+        [Authorize(Roles = "Admin, Producto")]
         // GET: ProductoDiaController/Create
         public IActionResult Create()
         {
@@ -148,7 +151,7 @@ namespace FrontEnd.Controllers
 
 
 
-
+        [Authorize(Roles = "Admin, Producto")]
         // GET: ProductoDiaController/Edit/5
         public ActionResult Edit(int id)
         {
@@ -236,7 +239,7 @@ namespace FrontEnd.Controllers
         }
 
 
-
+        [Authorize(Roles = "Admin, Producto")]
         // GET: ProductoDiaController/Delete/5
         public ActionResult Delete(int id)
         {

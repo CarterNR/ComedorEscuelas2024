@@ -1,5 +1,6 @@
 ﻿using FrontEnd.Helpers.Interfaces;
 using FrontEnd.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FrontEnd.Controllers
@@ -14,6 +15,7 @@ namespace FrontEnd.Controllers
             this.securityHelper = securityHelper;
         }
 
+        [Authorize(Roles = "Admin")]
         public IActionResult Index()
         {
             // Obtén los usuarios con sus roles desde el helper
@@ -32,7 +34,7 @@ namespace FrontEnd.Controllers
         }
 
 
-
+        [Authorize(Roles = "Admin")]
         public IActionResult Details(string id)
         {
             var userApi = securityHelper.GetUserDetails(id);
@@ -54,7 +56,7 @@ namespace FrontEnd.Controllers
             return View(viewModel);
         }
 
-
+        [Authorize(Roles = "Admin")]
         public IActionResult Edit(string id)
         {
             var userApi = securityHelper.GetUserDetails(id);
@@ -91,6 +93,7 @@ namespace FrontEnd.Controllers
             return View(model);
         }
 
+        [Authorize(Roles = "Admin")]
         public IActionResult Delete(string id)
         {
             var result = securityHelper.DeleteUser(id);

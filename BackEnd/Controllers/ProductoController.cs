@@ -53,7 +53,7 @@ namespace BackEnd.Controllers
 
                 productoService.Agregar(producto);
 
-                return Ok(producto); 
+                return Ok(producto);
             }
             catch (Exception ex)
             {

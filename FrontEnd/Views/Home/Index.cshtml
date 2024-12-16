@@ -36,42 +36,47 @@
                             </div>
                         </div>
                     </div>
-                    <div class="col-lg-4 col-md-4">
-                        <div class="card card-block card-stretch card-height" style="cursor: pointer;" onclick="location.href='/Producto/Index';">
-                            <div class="card-body">
-                                <div class="d-flex align-items-center mb-4 card-total-sale">
-                                    <div class="icon iq-icon-box-2 bg-danger-light">
-                                        <img src="../images/productos.png" class="img-fluid" alt="image">
+
+                    @if (User.IsInRole("Admin"))
+                    {
+                        <div class="col-lg-4 col-md-4">
+                            <div class="card card-block card-stretch card-height" style="cursor: pointer;" onclick="location.href='/Producto/Index';">
+                                <div class="card-body">
+                                    <div class="d-flex align-items-center mb-4 card-total-sale">
+                                        <div class="icon iq-icon-box-2 bg-danger-light">
+                                            <img src="../images/productos.png" class="img-fluid" alt="image">
+                                        </div>
+                                        <div>
+                                            <p class="mb-2">Productos</p>
+                                        </div>
                                     </div>
-                                    <div>
-                                        <p class="mb-2">Productos</p>
+                                    <div class="iq-progress-bar mt-2">
+                                        <span class="bg-danger iq-progress progress-1" data-percent="70">
+                                        </span>
                                     </div>
-                                </div>
-                                <div class="iq-progress-bar mt-2">
-                                    <span class="bg-danger iq-progress progress-1" data-percent="70">
-                                    </span>
                                 </div>
                             </div>
                         </div>
-                    </div>
-                    <div class="col-lg-4 col-md-4">
-                        <div class="card card-block card-stretch card-height" style="cursor: pointer;" onclick="location.href='/Pedido/Index';">
-                            <div class="card-body">
-                                <div class="d-flex align-items-center mb-4 card-total-sale">
-                                    <div class="icon iq-icon-box-2 bg-success-light">
-                                        <img src="../images/pedidos.png" class="img-fluid" alt="image">
+                        <div class="col-lg-4 col-md-4">
+                            <div class="card card-block card-stretch card-height" style="cursor: pointer;" onclick="location.href='/Pedido/Index';">
+                                <div class="card-body">
+                                    <div class="d-flex align-items-center mb-4 card-total-sale">
+                                        <div class="icon iq-icon-box-2 bg-success-light">
+                                            <img src="../images/pedidos.png" class="img-fluid" alt="image">
+                                        </div>
+                                        <div>
+                                            <p class="mb-2">Pedidos</p>
+                                        </div>
                                     </div>
-                                    <div>
-                                        <p class="mb-2">Pedidos</p>
+                                    <div class="iq-progress-bar mt-2">
+                                        <span class="bg-success iq-progress progress-1" data-percent="75">
+                                        </span>
                                     </div>
-                                </div>
-                                <div class="iq-progress-bar mt-2">
-                                    <span class="bg-success iq-progress progress-1" data-percent="75">
-                                    </span>
                                 </div>
                             </div>
                         </div>
-                    </div>
+                    }
+                    
                 </div>
             </div>
             <div class="col-12">

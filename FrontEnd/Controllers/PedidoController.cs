@@ -2,6 +2,7 @@
 using FrontEnd.Helpers.Implementations;
 using FrontEnd.Helpers.Interfaces;
 using FrontEnd.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -28,6 +29,7 @@ namespace FrontEnd.Controllers
 
         }
         // GET: PedidoController
+        [Authorize(Roles = "Admin")]
         public ActionResult Index()
         {
             var lista = _pedidoHelper.GetPedidos();
@@ -80,7 +82,7 @@ namespace FrontEnd.Controllers
             return View(lista);
         }
 
-
+        [Authorize(Roles = "Admin")]
         // GET: PedidoController/Details/5
         public ActionResult Details(int id)
         {
@@ -105,7 +107,7 @@ namespace FrontEnd.Controllers
 
             return View(pedido);
         }
-
+        [Authorize(Roles = "Admin")]
         // GET: PedidoController/Create
         public IActionResult Create()
         {
@@ -213,7 +215,7 @@ namespace FrontEnd.Controllers
         }
 
 
-
+        [Authorize(Roles = "Admin")]
         // GET: PedidoController/Edit/5
         public ActionResult Edit(int id)
         {
@@ -351,7 +353,7 @@ namespace FrontEnd.Controllers
 
 
 
-
+        [Authorize(Roles = "Admin")]
         // GET: PedidoController/Delete/5
         public ActionResult Delete(int id)
         {
