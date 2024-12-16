@@ -37,10 +37,8 @@
                             </div>
                         </div>
                         <div class="card-body">
-                                <form asp-action="Create" method="post" enctype="multipart/form-data">
-                                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-                               
-                  
+
+                            <form asp-action="Create" method="post" enctype="multipart/form-data">
 
                                 <div class="form-group">
                                     <label asp-for="NombreProducto" class="form-label"></label>
@@ -55,8 +53,8 @@
                                 </div>
 
                                 <div class="form-group">
-                                    <label asp-for="ImagenArchivo" class="form-label"></label>
-                                    <input asp-for="ImagenArchivo" type="file" class="form-control" accept="image/*" />
+                                    <label asp-for="ImagenArchivo" class="control-label"></label>
+                                    <input asp-for="ImagenArchivo" type="file" class="form-control-file" />
                                     <span asp-validation-for="ImagenArchivo" class="text-danger"></span>
                                 </div>
 
@@ -81,18 +79,29 @@
                                     <span asp-validation-for="IdEscuela" class="text-danger"></span>
                                 </div>
                                 <div class="form-group">
-                                    <input type="submit" value="Crear" class="btn btn-success" />
+                                    <input type="submit" value="Create" class="btn btn-success" />
                                 </div>
                                
                             </form>
                         </div>
                     </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
            
 
-@section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
-}
+    @section Scripts {
+        @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    }
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="/lib/jquery/dist/jquery.min.js"></script>
+    <script src="/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="/js/backend-bundle.min.js"></script>
+    <script src="/js/app.js"></script>
 
 </body>
 </html>

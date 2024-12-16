@@ -1,4 +1,5 @@
-﻿using Microsoft.Build.Framework;
+﻿using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.Build.Framework;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 
@@ -19,13 +20,19 @@ namespace FrontEnd.Models
 
         public bool? Estado { get; set; }
 
+
+        public string? NombreEscuela { get; set; }
+
+
         public int? IdEscuela { get; set; }
 
 
 
 
         // Campo adicional para el nombre de la escuela
-        public string? NombreEscuela { get; set; }
+        
+
+        public IEnumerable<SelectListItem> ListaEscuelas { get; set; } = new List<SelectListItem>();
 
 
 

@@ -73,7 +73,14 @@
                                         </td>
                                         <td>
                                             <div class="d-flex align-items-center">
-                                                <img src="@item.ImagenBase64" class="img-fluid rounded avatar-50 mr-3" alt="Producto">
+                                                    @if (item.Imagen != null)
+                                                    {
+                                                    <img src="data:image/jpeg;base64,@Convert.ToBase64String(item.Imagen)" alt="Imagen del producto" style="max-width: 100px;" />
+                                                    }
+                                                    else
+                                                    {
+                                                    <span>Sin imagen</span>
+                                                    }
                                             </div>
                                         </td>
 

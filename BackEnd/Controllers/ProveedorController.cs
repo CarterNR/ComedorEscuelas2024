@@ -3,6 +3,7 @@ using BackEnd.Services.Implementations;
 using BackEnd.Services.Interfaces;
 using Entities.Entities;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -53,13 +54,25 @@ namespace BackEnd.Controllers
 
         // DELETE api/<ProveedorController>/5
         [HttpDelete("{id}")]
-        public void Delete(int id)
+        public IActionResult Delete(int id)
         {
-            ProveedorDTO proveedor = new ProveedorDTO
+            try
             {
-                IdProveedor = id
-            };
-            proveedorService.Eliminar(proveedor);
+                ProveedorDTO proveedor = new ProveedorDTO
+                {
+                    IdProveedor = id
+                };
+                proveedorService.Eliminar(proveedor);
+                return Ok();
+            }
+            catch (DbUpdateException ex)
+            {
+                return BadRequest("No se puede eliminar el proveedor porque tiene productos asociados.");
+            }
+            catch (Exception ex)
+            {
+                return BadRequest("Error al eliminar el proveedor: " + ex.Message);
+            }
         }
 
     }

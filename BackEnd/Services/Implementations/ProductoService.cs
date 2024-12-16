@@ -34,6 +34,22 @@ namespace BackEnd.Services.Implementations
                 IdProveedor = producto.IdProveedor
             };
         }
+
+        Producto Convertir(ProductoDTO productoDTO)
+        {
+            return new Producto
+            {
+                IdProducto = productoDTO.IdProducto,
+                NombreProducto = productoDTO.NombreProducto,
+                Imagen = productoDTO.Imagen,  // Guardar la imagen en la base de datos
+                IdProveedor = productoDTO.IdProveedor,
+                IdEscuela = productoDTO.IdEscuela,
+                Cantidad = productoDTO.Cantidad,
+                Estado = productoDTO.Estado
+            };
+        }
+
+
         #endregion
 
 
@@ -64,7 +80,7 @@ namespace BackEnd.Services.Implementations
         public bool Editar(ProductoDTO producto)
         {
             // Convertir el DTO en la entidad Producto
-            var productoEntity = ConvertirAEntidad(producto);
+            var productoEntity = Convertir(producto);
 
             // Actualizar la entidad en la base de datos
             Unidad.ProductoDAL.Update(productoEntity);
@@ -73,20 +89,7 @@ namespace BackEnd.Services.Implementations
             return Unidad.Complete();
         }
 
-        private Producto ConvertirAEntidad(ProductoDTO productoDTO)
-        {
-            return new Producto
-            {
-                IdProducto = productoDTO.IdProducto,
-                NombreProducto = productoDTO.NombreProducto,
-                Imagen = productoDTO.Imagen,  // Guardar la imagen en la base de datos
-                IdProveedor = productoDTO.IdProveedor,
-                IdEscuela = productoDTO.IdEscuela,
-                Cantidad = productoDTO.Cantidad,
-                Estado = productoDTO.Estado
-            };
-        }
-
+        
 
 
 

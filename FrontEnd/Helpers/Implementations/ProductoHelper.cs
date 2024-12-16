@@ -22,7 +22,7 @@ namespace FrontEnd.Helpers.Implementations
                 IdProveedor = producto.IdProveedor,
                 IdEscuela = producto.IdEscuela
 
-    };
+            };
 
             
         }
@@ -175,9 +175,5 @@ namespace FrontEnd.Helpers.Implementations
 
             return productoActualizado; // Retornamos el producto actualizado
         }
-
-
-
-
     }
 }

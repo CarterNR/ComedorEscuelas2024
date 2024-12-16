@@ -313,11 +313,5 @@ namespace FrontEnd.Controllers
             }
         }
 
-
-
-
-       
-
-
     }
 }

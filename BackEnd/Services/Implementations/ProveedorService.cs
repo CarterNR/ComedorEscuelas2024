@@ -67,6 +67,13 @@ namespace BackEnd.Services.Implementations
         public bool Eliminar(ProveedorDTO proveedor)
         {
             var entity = Convertir(proveedor);
+
+            // Verificar si tiene productos asociados
+            if (context.Productos.Any(p => p.IdProveedor == proveedor.IdProveedor))
+            {
+                throw new Exception("No se puede eliminar el proveedor porque tiene productos asociados.");
+            }
+
             Unidad.ProveedorDAL.Remove(entity);
             return Unidad.Complete();
         }

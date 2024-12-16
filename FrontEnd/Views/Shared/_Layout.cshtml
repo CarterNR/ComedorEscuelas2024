@@ -12,6 +12,10 @@
     <link rel="stylesheet" href="../css/backend.css?v=1.0.0">
     <link rel="stylesheet" href="../vendor/line-awesome/dist/line-awesome/css/line-awesome.min.css">
     <link rel="stylesheet" href="../vendor/remixicon/fonts/remixicon.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.1/css/all.min.css" integrity="sha512-5Hs3dF2AEPkpNAR7UiOHba+lRSJNeM2ECkwxUIxC1Q/FLycGTbNapWXB4tP889k5T5Ju8fs4b1P5z/iB4nMfSQ==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+
 </head>
 <body class="  ">
     <!-- loader Start -->
@@ -22,8 +26,9 @@
 
         <div class="iq-sidebar  sidebar-default ">
             <div class="iq-sidebar-logo d-flex align-items-center justify-content-between">
-                <a href="../backend/index.html" class="header-logo">
-                    <img src="../images/logo.png" class="img-fluid rounded-normal light-logo" alt="logo"><h5 class="logo-title light-logo ml-3">Opciones</h5>
+                <a class="header-logo">
+                    
+                    <img src="@Url.Content("~/images/logo.png")" class="img-fluid rounded-normal light-logo" alt="logo"><h5 class="logo-title light-logo ml-3" style="color:#32BDEA;">Opciones</h5>
                 </a>
                 <div class="iq-menu-bt-sidebar ml-0">
                     <i class="las la-bars wrapper-menu"></i>
@@ -68,6 +73,27 @@
                             </a>
                            
                         </li>
+                        <li class="">
+                            <a asp-area="" asp-controller="Proveedor" asp-action="Index">
+                                <svg class="svg-icon" id="p-dash9" width="20" height="20" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <rect x="1" y="5" width="15" height="10" rx="1" ry="1" stroke="currentColor"></rect>
+                                    <path d="M16 8 H20 L22 12 V15 H16 Z" stroke="currentColor" fill="none"></path>
+                                    <circle cx="5.5" cy="17.5" r="2.5" stroke="currentColor"></circle>
+                                    <circle cx="17.5" cy="17.5" r="2.5" stroke="currentColor"></circle>
+                                    <line x1="1" y1="15" x2="16" y2="15" stroke="currentColor"></line>
+                                </svg>
+                                <span class="ml-4">Proveedores</span>
+                            </a>
+                        </li>
+                        <li class="">
+                            <a asp-area="" asp-controller="User" asp-action="Index">
+                                <svg class="svg-icon" id="user-icon" width="20" height="20" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zM12 14c-3.31 0-6 1.69-6 3v2h12v-2c0-1.31-2.69-3-6-3z" stroke="currentColor" fill="none"></path>
+                                </svg>
+                                <span class="ml-4">Usuarios</span>
+                            </a>
+                        </li>
+
      
                     </ul>
                 </nav>
@@ -75,10 +101,9 @@
                     <div class="card border-none">
                         <div class="card-body p-0">
                             <div class="sidebarbottom-content">
-                                    <img src="../images/productosdia.png" class="img-fluid" alt="side-bkg" style="max-width: 50%; height: auto;">
+                                <img src="@Url.Content("~/images/productosdia.png")" class="img-fluid" alt="side-bkg" style="max-width: 50%; height: auto;">
                                 <h6 class="mt-4 px-4 body-title">Opciones comedor escolar</h6>
                                 <a href="@Url.Action("Index", "Home")" class="btn sidebar-bottom-btn mt-4">Inicio</a>
-
                             </div>
                         </div>
                     </div>
@@ -94,7 +119,6 @@
                             <h5 class="logo-title ml-3">Comedor Escolar</h5>
                         </a>
                     </div>
-                   
                     <div class="d-flex align-items-center">
                         <button class="navbar-toggler" type="button" data-toggle="collapse"
                                 data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
@@ -103,25 +127,31 @@
                         </button>
                         <div class="collapse navbar-collapse" id="navbarSupportedContent">
                             <ul class="navbar-nav ml-auto navbar-list align-items-center">
-                             
-                               
-                               
-                               
                                 <li class="nav-item nav-icon dropdown caption-content">
                                     <a href="#" class="search-toggle dropdown-toggle" id="dropdownMenuButton4"
                                        data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                        <img src="../images/user.png" class="img-fluid rounded" alt="user">
+                                        <img src="@Url.Content("~/images/user.png")" class="img-fluid rounded" alt="user">
+
                                     </a>
-                                    <div class="iq-sub-dropdown dropdown-menu" aria-labelledby="dropdownMenuButton">
+                                    <div class="iq-sub-dropdown dropdown-menu" aria-labelledby="dropdownMenuButton" style="right:auto">
                                         <div class="card shadow-none m-0">
                                             <div class="card-body p-0 text-center">
                                                
                                                 <div class="p-3">
-                                                    <h5 class="mb-1">JoanDuo@property.com</h5>
-                                                    <p class="mb-0">Since 10 march, 2020</p>
+                                                    @if (User.Identity.IsAuthenticated)
+                                                    {
+                                                        <h5 class="mb-1">@User.Identity.Name</h5>
+                                                    }
+                                                    else
+                                                    {
+                                                        <h5 class="mb-1">No estás autenticado</h5>
+                                                    }
                                                     <div class="d-flex align-items-center justify-content-center mt-3">
-                                                        <a href="../app/user-profile.html" class="btn border mr-2">Profile</a>
-                                                        <a href="auth-sign-in.html" class="btn border">Sign Out</a>
+                                                        @if (User.IsInRole("Admin"))
+                                                        {
+                                                            <a asp-controller="Register" asp-action="Register" class="btn border mr-2">Registrar</a>
+                                                        }
+                                                        <a asp-controller="Logout" asp-action="Logout" class="btn border">Cerrar Sesion</a>
                                                     </div>
                                                 </div>
                                             </div>

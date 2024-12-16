@@ -15,11 +15,12 @@
 
         public bool? Estado { get; set; }
 
+        public string? NombreEscuela { get; set; }
         public int? IdEscuela { get; set; }
 
 
         // Campo adicional para el nombre de la escuela
-        public string? NombreEscuela { get; set; }
+       
 
     }
 
