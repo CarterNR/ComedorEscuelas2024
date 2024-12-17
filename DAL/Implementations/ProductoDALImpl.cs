@@ -1,5 +1,6 @@
 ﻿using DAL.Interfaces;
 using Entities.Entities;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,7 +16,6 @@ namespace DAL.Implementations
         public ProductoDALImpl(SisComedorContext context) : base(context)
         {
             this.context = context;
-
         }
 
     }

@@ -8,9 +8,14 @@ namespace FrontEnd.Helpers.Implementations
 {
     public class ProductoHelper : IProductoHelper
     {
-        IServiceRepository _ServiceRepository;
+        IServiceRepository _serviceRepository;
 
-        Producto Convertir(ProductoViewModel producto)
+        public ProductoHelper(IServiceRepository serviceRepository)
+        {
+            _serviceRepository = serviceRepository;
+        }
+
+        private Producto Convertir(ProductoViewModel producto)
         {
             return new Producto
             {
@@ -21,126 +26,46 @@ namespace FrontEnd.Helpers.Implementations
                 Estado = producto.Estado,
                 IdProveedor = producto.IdProveedor,
                 IdEscuela = producto.IdEscuela
-
             };
-
-            
-        }
-
-
-        public ProductoHelper(IServiceRepository serviceRepository)
-        {
-            _ServiceRepository = serviceRepository;
         }
 
         public ProductoViewModel Add(ProductoViewModel producto)
         {
-            HttpResponseMessage response = _ServiceRepository.PostResponse("api/Producto", Convertir(producto));
-            if (response.IsSuccessStatusCode)
+            if (producto.ImagenFile != null)
             {
-                var content = response.Content.ReadAsStringAsync().Result;
-                Console.WriteLine("Producto creado exitosamente. Respuesta del servidor: " + content);
+                using (var ms = new MemoryStream())
+                {
+                    producto.ImagenFile.CopyTo(ms);
+                    producto.Imagen = ms.ToArray();
+                }
             }
-            else
+
+            HttpResponseMessage response = _serviceRepository.PostResponse("api/Producto", Convertir(producto));
+            if (!response.IsSuccessStatusCode)
             {
-                var errorContent = response.Content.ReadAsStringAsync().Result;
-                Console.WriteLine("Error al crear el producto. Código de estado: " + response.StatusCode);
-                Console.WriteLine("Detalles del error: " + errorContent);
-                throw new Exception("Error al crear el producto: " + errorContent);
+                throw new Exception("Error al crear el producto");
             }
             return producto;
         }
 
-
-
         public void Delete(int id)
         {
-            HttpResponseMessage responseMessage = _ServiceRepository.DeleteResponse("api/Producto/" + id.ToString());
-            if (responseMessage.IsSuccessStatusCode) { var content = responseMessage.Content; }
-
-
-
+            HttpResponseMessage response = _serviceRepository.DeleteResponse($"api/Producto/{id}");
+            if (!response.IsSuccessStatusCode)
+            {
+                throw new Exception("No se puede eliminar el producto porque está siendo utilizado");
+            }
         }
-
-        public List<ProductoViewModel> GetProductos()
-        {
-            HttpResponseMessage responseMessage = _ServiceRepository.GetResponse("api/Producto");
-            List<Producto> productos = new List<Producto>();
-
-            if (responseMessage != null && responseMessage.IsSuccessStatusCode)
-            {
-                var content = responseMessage.Content.ReadAsStringAsync().Result;
-                productos = JsonConvert.DeserializeObject<List<Producto>>(content);
-            }
-            else
-            {
-           
-                return new List<ProductoViewModel>();
-            }
-
-            List<ProductoViewModel> resultado = new List<ProductoViewModel>();
-
-            foreach (var item in productos)
-            {
-                Escuela escuela = null;
-                Proveedor proveedor = null;
-
-                try
-                {
-                    HttpResponseMessage escuelaResponse = _ServiceRepository.GetResponse("api/Escuela/" + item.IdEscuela);
-                    if (escuelaResponse.IsSuccessStatusCode)
-                    {
-                        var escuelaContent = escuelaResponse.Content.ReadAsStringAsync().Result;
-                        escuela = JsonConvert.DeserializeObject<Escuela>(escuelaContent);
-                    }
-
-                    HttpResponseMessage proveedorResponse = _ServiceRepository.GetResponse("api/Proveedor/" + item.IdProveedor);
-                    if (proveedorResponse.IsSuccessStatusCode)
-                    {
-                        var proveedorContent = proveedorResponse.Content.ReadAsStringAsync().Result;
-                        proveedor = JsonConvert.DeserializeObject<Proveedor>(proveedorContent);
-                    }
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine($"Error al obtener datos de la escuela/proveedor: {ex.Message}");
-                }
-
-                resultado.Add(new ProductoViewModel
-                {
-                    IdProducto = item.IdProducto,
-                    NombreProducto = item.NombreProducto,
-                    Cantidad = item.Cantidad,
-                    Imagen = item.Imagen,
-                    Estado = item.Estado,
-                    IdProveedor = item.IdProveedor,
-                    NombreProveedor = proveedor?.NombreProveedor ?? "Desconocido",
-                    IdEscuela = item.IdEscuela,
-                    NombreEscuela = escuela?.NombreEscuela ?? "Desconocido"
-                });
-            }
-
-            return resultado;
-        }
-
 
         public ProductoViewModel GetProducto(int? id)
         {
-            if (id == null)
-                return null;
+            HttpResponseMessage response = _serviceRepository.GetResponse($"api/Producto/{id}");
+            if (!response.IsSuccessStatusCode) return null;
 
-            HttpResponseMessage responseMessage = _ServiceRepository.GetResponse("api/Producto/" + id.ToString());
-            Producto producto = new Producto();
+            var content = response.Content.ReadAsStringAsync().Result;
+            var producto = JsonConvert.DeserializeObject<Producto>(content);
 
-            if (responseMessage != null)
-            {
-                var content = responseMessage.Content.ReadAsStringAsync().Result;
-                producto = JsonConvert.DeserializeObject<Producto>(content);
-            }
-
-
-
-            ProductoViewModel resultado = new ProductoViewModel
+            return new ProductoViewModel
             {
                 IdProducto = producto.IdProducto,
                 NombreProducto = producto.NombreProducto,
@@ -148,32 +73,66 @@ namespace FrontEnd.Helpers.Implementations
                 Imagen = producto.Imagen,
                 Estado = producto.Estado,
                 IdProveedor = producto.IdProveedor,
-                IdEscuela = producto.IdEscuela
+                IdEscuela = producto.IdEscuela,
+                NombreProveedor = producto.NombreProveedor,
+                NombreEscuela = producto.NombreEscuela
             };
-
-            return resultado;
         }
 
+        public List<ProductoViewModel> GetProductos()
+        {
+            HttpResponseMessage response = _serviceRepository.GetResponse("api/Producto");
+            if (!response.IsSuccessStatusCode) return new List<ProductoViewModel>();
 
+            var content = response.Content.ReadAsStringAsync().Result;
+            var productos = JsonConvert.DeserializeObject<List<Producto>>(content);
 
-
-
-
+            return productos.Select(p => new ProductoViewModel
+            {
+                IdProducto = p.IdProducto,
+                NombreProducto = p.NombreProducto,
+                Cantidad = p.Cantidad,
+                Imagen = p.Imagen,
+                Estado = p.Estado,
+                IdProveedor = p.IdProveedor,
+                IdEscuela = p.IdEscuela,
+                NombreProveedor = p.NombreProveedor,
+                NombreEscuela = p.NombreEscuela
+            }).ToList();
+        }
 
         public ProductoViewModel Update(ProductoViewModel producto)
         {
-            HttpResponseMessage response = _ServiceRepository.PutResponse("api/Producto", Convertir(producto));
+            // Convertir la imagen si hay un nuevo archivo
+            if (producto.ImagenFile != null)
+            {
+                using (var ms = new MemoryStream())
+                {
+                    producto.ImagenFile.CopyTo(ms);
+                    producto.Imagen = ms.ToArray();
+                }
+            }
+            else
+            {
+                // Si no hay nueva imagen, obtener la imagen existente
+                var productoExistente = GetProducto(producto.IdProducto);
+                producto.Imagen = productoExistente.Imagen;
+            }
+
+            // Convertir el ProductoViewModel a un objeto que pueda enviarse a la API
+            var productoParaActualizar = Convertir(producto);
+
+            // Enviar la solicitud de actualización a la API
+            HttpResponseMessage response = _serviceRepository.PutResponse("api/Producto", productoParaActualizar);
 
             if (!response.IsSuccessStatusCode)
             {
-                throw new Exception("No se pudo actualizar el producto.");
+                // Obtener detalles del error
+                var errorContent = response.Content.ReadAsStringAsync().Result;
+                throw new Exception($"Error al actualizar el producto: {errorContent}");
             }
 
-            // Aquí asumimos que el servicio de la API devuelve el producto actualizado
-            var content = response.Content.ReadAsStringAsync().Result;
-            var productoActualizado = JsonConvert.DeserializeObject<ProductoViewModel>(content);
-
-            return productoActualizado; // Retornamos el producto actualizado
+            return producto;
         }
     }
 }

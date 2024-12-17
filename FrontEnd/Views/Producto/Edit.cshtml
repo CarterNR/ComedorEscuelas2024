@@ -7,7 +7,6 @@
 <!DOCTYPE html>
 <html>
 <head>
-
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <title>@ViewData["Title"]</title>
@@ -22,151 +21,99 @@
 
 <body>
 
- <div class="content-page">
-     <div class="container-fluid add-form-list">
-        <div class="row">
-            <div class="col-sm-12">
-                <div class="card">
-                    <div class="card-header d-flex justify-content-between">
-                         <div class="header-title d-flex align-items-center">
+    <div class="content-page">
+        <div class="container-fluid add-form-list">
+            <div class="row">
+                <div class="col-sm-12">
+                    <div class="card">
+                        <div class="card-header d-flex justify-content-between">
+                            <div class="header-title d-flex align-items-center">
                                 <a asp-action="Index" class="btn btn-info mr-2">
                                     <i class="fas fa-arrow-left"></i>
                                 </a>
                                 <h4 class="card-title mb-0">Editar Producto</h4>
                             </div>
-                    </div>
-                    <div class="card-body">
-
-                            <form asp-action="Edit" method="post" enctype="multipart/form-data">
+                        </div>
+                        <div class="card-body">
+                            <form asp-action="Edit" method="post">
                                 <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
-                                <div class="form-group">
-                                    <label>ID Producto</label>
-                                    <input asp-for="IdProducto" class="form-control" />
-                                    <span asp-validation-for="IdProducto" class="text-danger"></span>
-                                </div>
+                                @Html.HiddenFor(model => model.IdProducto)
 
                                 <div class="form-group">
-                                    <label>Nombre del producto</label>
+                                    <label asp-for="NombreProducto" class="control-label"></label>
                                     <input asp-for="NombreProducto" class="form-control" />
                                     <span asp-validation-for="NombreProducto" class="text-danger"></span>
                                 </div>
 
                                 <div class="form-group">
-                                    <label>Cantidad</label>
+                                    <label asp-for="Cantidad" class="control-label"></label>
                                     <input asp-for="Cantidad" class="form-control" />
                                     <span asp-validation-for="Cantidad" class="text-danger"></span>
                                 </div>
 
-                                <div class="form-group">
-                                    <label>Imagen Actual</label>
-                                    <br />
-                                    @if (Model.Imagen != null)
-                                    {
-                                        <div>
-                                            <img src="data:image/jpeg;base64,@Convert.ToBase64String(Model.Imagen)" alt="Imagen del Producto" width="100" height="100" />
-                                        </div>
-                                    }
-                                    else
-                                    {
-                                        <div>
-                                            <p>No hay imagen disponible.</p>
-                                        </div>
-                                    }
-                                </div>
-
+                               
+                                @if (Model.Imagen != null)
+                                {
                                     <div class="form-group">
-                                        <label for="ImagenArchivo">Nueva Imagen</label>
-                                        <input type="file" class="form-control" id="ImagenArchivo" name="ImagenArchivo" />
+                                        <label>Imagen Actual:</label>
+                                        <img src="@Url.Action("MostrarImagen", new { id = Model.IdProducto })"
+                                             alt="Imagen del Producto"
+                                             class="img-fluid"
+                                             style="max-width: 200px; max-height: 200px;" />
                                     </div>
-
+                                    <input type="hidden" asp-for="Imagen" />
+                                }
 
 
 
                                 <div class="form-group">
-                                    <label>Estado</label>
-                                    <input asp-for="Estado" class="form-control" />
+                                    <label asp-for="Estado" class="control-label"></label>
+                                    <select asp-for="Estado" class="form-control">
+                                        <option value="True">Activo</option>
+                                        <option value="False">Inactivo</option>
+                                    </select>
                                     <span asp-validation-for="Estado" class="text-danger"></span>
                                 </div>
 
-
                                 <div class="form-group">
-                                    <label for="IdProveedor">Proveedor</label>
-                                    @Html.DropDownListFor(
-                                             model => model.IdProveedor,
-                                             Model.ListaProveedores,
-                                             new { @class = "form-control" })
-                                    @Html.ValidationMessageFor(model => model.IdProveedor, "", new { @class = "text-danger" })
+                                    <label for="IdProveedor">Proveedores</label>
+                                    <select asp-for="IdProveedor" class="form-control" asp-items="Model.ListaProveedores"></select>
+                                    <span asp-validation-for="IdProveedor" class="text-danger"></span>
                                 </div>
 
                                 <div class="form-group">
-                                    <label for="IdEscuela">Escuela</label>
-                                    @Html.DropDownListFor(
-                                             model => model.IdEscuela,
-                                             Model.ListaEscuelas,
-                                             new { @class = "form-control" })
-                                    @Html.ValidationMessageFor(model => model.IdEscuela, "", new { @class = "text-danger" })
+                                    <label for="IdEscuela">Escuelas</label>
+                                    <select asp-for="IdEscuela" class="form-control" asp-items="Model.ListaEscuelas"></select>
+                                    <span asp-validation-for="IdEscuela" class="text-danger"></span>
                                 </div>
 
-                              
                                 <div class="form-group">
                                     <button type="submit" value="Save" class="btn btn-success">Guardar cambios</button>
-                                    
-
                                 </div>
-                              
                             </form>
-
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-      </div>
-    <!-- Wrapper End-->
-    <footer class="iq-footer">
-            <div class="container-fluid">
-            <div class="card">
-                <div class="card-body">
-                    <div class="row">
-                        <div class="col-lg-6">
-                            <ul class="list-inline mb-0">
-                                <li class="list-inline-item"><a href="../backend/privacy-policy.html">Privacy Policy</a></li>
-                                <li class="list-inline-item"><a href="../backend/terms-of-service.html">Terms of Use</a></li>
-                            </ul>
-                        </div>
-                        <div class="col-lg-6 text-right">
-                            <span class="mr-1"><script>document.write(new Date().getFullYear())</script>©</span> <a href="#" class="">POS Dash</a>.
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </footer>
-    <script src="/js/backend-bundle.min.js"></script>
-    
-    <script src="/js/table-treeview.js"></script>
-    
-    <script src="/js/customizer.js"></script>
-    
-    <script async src="/js/chart-custom.js"></script>
-    
-    <script src="/js/app.js"></script>
+
 
     @section Scripts {
         @{
             await Html.RenderPartialAsync("_ValidationScriptsPartial");
         }
+        <script>
+            // Actualizar el nombre del archivo seleccionado
+            $(".custom-file-input").on("change", function() {
+                var fileName = $(this).val().split("\\").pop();
+                $(this).siblings(".custom-file-label").addClass("selected").html(fileName);
+            });
+        </script>
     }
-    <script src="~/lib/jquery/dist/jquery.min.js"></script>
-    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="/lib/jquery/dist/jquery.min.js"></script>
-    <script src="/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="/js/backend-bundle.min.js"></script>
     <script src="/js/app.js"></script>
+
 </body>
 </html>
-
-
-
-

@@ -91,7 +91,6 @@
                             @foreach (var producto in Model)
                             {
                                 <li class="col-lg-2 col-md-3 col-sm-4 col-6 mb-2">
-                                    <div class="card product-card-compact">
                                         <div class="card-body p-1">
                                             <div class="bg-warning-light rounded text-center">
                                                 @if (producto.Imagen != null)
@@ -110,7 +109,6 @@
                                                 <p class="mb-0 text-truncate compact-text">@producto.Cantidad</p>
                                             </div>
                                         </div>
-                                    </div>
                                 </li>
                             }
                         </ul>

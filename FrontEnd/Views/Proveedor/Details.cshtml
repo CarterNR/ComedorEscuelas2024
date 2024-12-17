@@ -77,7 +77,9 @@
                                     <label>Estado</label>
                                 </dt>
                                 <dd class="col-sm-10">
-                                    @Html.DisplayFor(model => model.Estado)
+                                    <div class="badge @(Model.Estado ?? false ? "badge-success" : "badge-danger")">
+                                        @(Model.Estado.HasValue ? (Model.Estado.Value ? "Activo" : "Inactivo") : "Desconocido")
+                                    </div>
                                 </dd>
 
                                 <dt class="col-sm-2">

@@ -7,7 +7,6 @@
 <!DOCTYPE html>
 <html>
 <head>
-
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <title>@ViewData["Title"]</title>
@@ -32,40 +31,37 @@
                                 <a asp-action="Index" class="btn btn-info mr-2">
                                     <i class="fas fa-arrow-left"></i>
                                 </a>
-                                <h4 class="card-title mb-0">Crear nuevo producto</h4>
+                                <h4 class="card-title mb-0">Crear Producto</h4>
                             </div>
                         </div>
                         <div class="card-body">
-
-                            <form asp-action="Create">
+                            <form asp-action="Create" enctype="multipart/form-data">
                                 <div asp-validation-summary="ModelOnly" class="text-danger"></div>
                                 <div class="form-group">
-                                    <label asp-for="NombreProducto" class="form-label"></label>
+                                    <label asp-for="NombreProducto" class="control-label"></label>
                                     <input asp-for="NombreProducto" class="form-control" />
                                     <span asp-validation-for="NombreProducto" class="text-danger"></span>
                                 </div>
-
                                 <div class="form-group">
-                                    <label asp-for="Cantidad" class="form-label"></label>
+                                    <label asp-for="Cantidad" class="control-label"></label>
                                     <input asp-for="Cantidad" class="form-control" />
                                     <span asp-validation-for="Cantidad" class="text-danger"></span>
                                 </div>
-
                                 <div class="form-group">
-                                    <label asp-for="ImagenArchivo" class="control-label"></label>
-                                    <input asp-for="ImagenArchivo" type="file" class="form-control-file" />
-                                    <span asp-validation-for="ImagenArchivo" class="text-danger"></span>
+                                    <label asp-for="ImagenFile" class="control-label">Imagen del Producto</label>
+                                    <div class="custom-file">
+                                        <input asp-for="ImagenFile" type="file" class="custom-file-input" id="customFile" accept="image/*" />
+                                        <label class="custom-file-label" for="customFile">Seleccionar archivo</label>
+                                    </div>
+                                    <span asp-validation-for="ImagenFile" class="text-danger"></span>
                                 </div>
 
 
-
-                                <div class="form-group">
+                                <div class="form-group d-none">
                                     <label asp-for="Estado" class="form-label"></label>
-                                    <input asp-for="Estado" class="form-control" />
+                                    <input asp-for="Estado" class="form-control" value="true" />
                                     <span asp-validation-for="Estado" class="text-danger"></span>
                                 </div>
-
-
 
                                 <div class="form-group">
                                     <label for="IdProveedor">Proveedores</label>
@@ -78,9 +74,8 @@
                                     <select asp-for="IdEscuela" class="form-control" asp-items="Model.ListaEscuelas"></select>
                                     <span asp-validation-for="IdEscuela" class="text-danger"></span>
                                 </div>
-
                                 <div class="form-group">
-                                    <input type="submit" value="Create" class="btn btn-primary" />
+                                    <input type="submit" value="Crear" class="btn btn-success" />
                                 </div>
                             </form>
                         </div>
@@ -90,20 +85,22 @@
         </div>
     </div>
 
-
-
     @section Scripts {
         @{
             await Html.RenderPartialAsync("_ValidationScriptsPartial");
         }
+        <script>
+            // Actualizar el nombre del archivo seleccionado
+            $(".custom-file-input").on("change", function() {
+                var fileName = $(this).val().split("\\").pop();
+                $(this).siblings(".custom-file-label").addClass("selected").html(fileName);
+            });
+        </script>
     }
 
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="/lib/jquery/dist/jquery.min.js"></script>
-    <script src="/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="/js/backend-bundle.min.js"></script>
     <script src="/js/app.js"></script>
-
 </body>
 </html>

@@ -55,9 +55,9 @@
                                     <input asp-for="Cantidad" class="form-control" />
                                     <span asp-validation-for="Cantidad" class="text-danger"></span>
                                 </div>
-                                <div class="form-group">
-                                    <label for="IdUsuario">Usuario</label>
-                                    <select asp-for="IdUsuario" class="form-control" asp-items="Model.ListaUsuarios"></select>
+                                <div class="form-group d-none">
+                                    <label asp-for="IdUsuario" class="form-label"></label>
+                                    <input asp-for="IdUsuario" class="form-control" value="1" />
                                     <span asp-validation-for="IdUsuario" class="text-danger"></span>
                                 </div>
                                 <div class="form-group">
@@ -70,9 +70,9 @@
                                     <select asp-for="IdEstadoPedido" class="form-control" asp-items="Model.ListaEstadoPedidos"></select>
                                     <span asp-validation-for="IdEstadoPedido" class="text-danger"></span>
                                 </div>
-                                <div class="form-group">
-                                    <label>Estado</label>
-                                    <input asp-for="Estado" class="form-control" />
+                                <div class="form-group d-none">
+                                    <label asp-for="Estado" class="form-label"></label>
+                                    <input asp-for="Estado" class="form-control" value="true" />
                                     <span asp-validation-for="Estado" class="text-danger"></span>
                                 </div>
                                 <div class="form-group">

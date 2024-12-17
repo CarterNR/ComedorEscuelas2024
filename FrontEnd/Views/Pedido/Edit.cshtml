@@ -79,15 +79,10 @@
                                         }
                                     </div>
                                 }
-
-
-                                <div class="form-group">
-                                    <label for="IdUsuario">Usuario</label>
-                                    @Html.DropDownListFor(
-                                             model => model.IdUsuario,
-                                             Model.ListaUsuarios,
-                                             new { @class = "form-control" })
-                                    @Html.ValidationMessageFor(model => model.IdUsuario, "", new { @class = "text-danger" })
+                                <div class="form-group d-none">
+                                    <label asp-for="IdUsuario" class="form-label"></label>
+                                    <input asp-for="IdUsuario" class="form-control" value="1" />
+                                    <span asp-validation-for="IdUsuario" class="text-danger"></span>
                                 </div>
 
                                 <div class="form-group">
@@ -108,9 +103,9 @@
                                     @Html.ValidationMessageFor(model => model.IdEstadoPedido, "", new { @class = "text-danger" })
                                 </div>                        
 
-                                <div class="form-group">
-                                    <label>Estado</label>
-                                    <input asp-for="Estado" class="form-control" />
+                                <div class="form-group d-none">
+                                    <label asp-for="Estado" class="form-label"></label>
+                                    <input asp-for="Estado" class="form-control" value="true" />
                                     <span asp-validation-for="Estado" class="text-danger"></span>
                                 </div>
 
@@ -128,26 +123,7 @@
         </div>
     </div>
       </div>
-    <!-- Wrapper End-->
-    <footer class="iq-footer">
-            <div class="container-fluid">
-            <div class="card">
-                <div class="card-body">
-                    <div class="row">
-                        <div class="col-lg-6">
-                            <ul class="list-inline mb-0">
-                                <li class="list-inline-item"><a href="../backend/privacy-policy.html">Privacy Policy</a></li>
-                                <li class="list-inline-item"><a href="../backend/terms-of-service.html">Terms of Use</a></li>
-                            </ul>
-                        </div>
-                        <div class="col-lg-6 text-right">
-                            <span class="mr-1"><script>document.write(new Date().getFullYear())</script>©</span> <a href="#" class="">POS Dash</a>.
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </footer>
+
     <script src="/js/backend-bundle.min.js"></script>
     
     <script src="/js/table-treeview.js"></script>

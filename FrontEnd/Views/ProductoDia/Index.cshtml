@@ -72,7 +72,9 @@
                                         @Html.DisplayFor(modelItem => item.Fecha)
                                     </td>
                                     <td>
-                                        <div class="badge badge-success">@Html.DisplayFor(modelItem => item.Estado)</div>
+                                            <div class="badge @(item.Estado ?? false ? "badge-success" : "badge-danger")">
+                                                @(item.Estado.HasValue ? (item.Estado.Value ? "Activo" : "Inactivo") : "Desconocido")
+                                            </div>
 
                                     </td>
                                     <td>

@@ -19,82 +19,38 @@ namespace BackEnd.Controllers
             this.productoService = productoService;
         }
 
-
-
-        // GET: api/<ProductoController>
         [HttpGet]
         public IEnumerable<ProductoDTO> Get()
         {
             return productoService.Obtener();
         }
 
-        // GET api/<ProductoController>/5
         [HttpGet("{id}")]
         public ProductoDTO Get(int id)
         {
             return productoService.Obtener(id);
         }
 
-        // POST api/<ProductoController>
         [HttpPost]
         public IActionResult Post([FromBody] ProductoDTO producto)
         {
-            try
-            {
-                if (producto == null)
-                {
-                    return BadRequest("El producto no puede ser nulo.");
-                }
-
-                if (producto.Imagen == null || producto.Imagen.Length == 0)
-                {
-                    return BadRequest("La imagen es requerida y no puede estar vacía.");
-                }
-
-                productoService.Agregar(producto);
-
-                return Ok(producto);
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, $"Error interno: {ex.Message}");
-            }
+            productoService.Agregar(producto);
+            return Ok(producto);
         }
 
-
-        // PUT api/<ProductoController>/5
         [HttpPut]
         public IActionResult Put([FromBody] ProductoDTO producto)
         {
-            if (producto == null)
-            {
-                return BadRequest("Producto es nulo.");
-            }
-
-            var productoActualizado = productoService.Editar(producto);
-
-            if (!productoActualizado)
-            {
-                return BadRequest("No se pudo actualizar el producto.");
-            }
-
-            return Ok(producto);  // Devuelve el producto actualizado
+            productoService.Editar(producto);
+            return Ok(producto);
         }
 
-
-
-        // DELETE api/<ProductoController>/5
         [HttpDelete("{id}")]
         public IActionResult Delete(int id)
         {
-            var producto = new ProductoDTO { IdProducto = id };
-            var resultado = productoService.Eliminar(producto);
-
-            if (resultado)
-            {
-                return NoContent(); 
-            }
-            return BadRequest("No se pudo eliminar el producto. Verifica si existe o si tiene dependencias.");
+            ProductoDTO producto = new ProductoDTO { IdProducto = id };
+            productoService.Eliminar(producto);
+            return Ok();
         }
 
 

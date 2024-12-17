@@ -12,307 +12,254 @@ namespace FrontEnd.Controllers
 {
     public class ProductoController : Controller
     {
-        IProductoHelper _productoHelper;
-        IEscuelaHelper _escuelaHelper;
-        IProveedorHelper _proveedorHelper;
+        private readonly IProductoHelper _productoHelper;
+        private readonly IProveedorHelper _proveedorHelper;
+        private readonly IEscuelaHelper _escuelaHelper;
 
-
-
-        public ProductoController(IProductoHelper productoHelper, IEscuelaHelper escuelaHelper, IProveedorHelper proveedorHelper)
+        public ProductoController(
+            IProductoHelper productoHelper,
+            IProveedorHelper proveedorHelper,
+            IEscuelaHelper escuelaHelper)
         {
             _productoHelper = productoHelper;
-            _escuelaHelper = escuelaHelper;
             _proveedorHelper = proveedorHelper;
+            _escuelaHelper = escuelaHelper;
         }
-        // GET: ProductoController
+
+        // GET: Producto
         [Authorize(Roles = "Admin")]
-        public ActionResult Index()
-
-
+        public IActionResult Index()
         {
-            var lista = _productoHelper.GetProductos();
-
-            var escuelas = _escuelaHelper.GetEscuelas();
-
-            foreach (var item in lista)
-            {
-                var escuela = escuelas.FirstOrDefault(e => e.IdEscuela == item.IdEscuela);
-                if (escuela != null)
-                {
-                    item.NombreEscuela = escuela.NombreEscuela;
-                }
-            }
-
-            var proveedores = _proveedorHelper.GetProveedores();
-
-            foreach (var item in lista)
-            {
-                var proveedor = proveedores.FirstOrDefault(p => p.IdProveedor == item.IdProveedor);
-                if (proveedor != null)
-                {
-                    item.NombreProveedor = proveedor.NombreProveedor;
-                }
-            }
-
-            foreach (var producto in lista)
-            {
-                if (producto.Imagen != null)
-                {
-                    string base64Image = Convert.ToBase64String(producto.Imagen);
-                    producto.ImagenBase64 = $"data:image/jpeg;base64,{base64Image}";
-                }
-            }
-
-            return View(lista);
+            var productos = _productoHelper.GetProductos();
+            return View(productos);
         }
 
         [Authorize(Roles = "Admin")]
-        // GET: ProductoController/Details/5
-        public ActionResult Details(int id)
+        // GET: Producto/Details/5
+        public IActionResult Details(int? id)
         {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
             var producto = _productoHelper.GetProducto(id);
-
             if (producto == null)
             {
                 return NotFound();
             }
 
-            var proveedor = _proveedorHelper.GetProveedor(producto.IdProveedor);
-            producto.NombreProveedor = proveedor?.NombreProveedor;
-
-            var escuela = _escuelaHelper.GetEscuela(producto.IdEscuela);
-            producto.NombreEscuela = escuela?.NombreEscuela;
-
-            if (producto.Imagen != null)
-            {
-                string base64Image = Convert.ToBase64String(producto.Imagen);
-                producto.ImagenBase64 = $"data:image/jpeg;base64,{base64Image}";
-            }
-
             return View(producto);
         }
 
-
         [Authorize(Roles = "Admin")]
-        // GET: ProductoController/Create
+        // GET: Producto/Create
         public IActionResult Create()
         {
-            var model = new ProductoViewModel();
-
-            var escuelas = _escuelaHelper.GetEscuelas();
-            model.ListaEscuelas = escuelas.Select(e => new SelectListItem
+            var viewModel = new ProductoViewModel
             {
-                Value = e.IdEscuela.ToString(),
-                Text = e.NombreEscuela
-            }).ToList();
+                ListaProveedores = _proveedorHelper.GetProveedores()
+                    .Select(p => new SelectListItem
+                    {
+                        Value = p.IdProveedor.ToString(),
+                        Text = p.NombreProveedor
+                    }),
+                ListaEscuelas = _escuelaHelper.GetEscuelas()
+                    .Select(e => new SelectListItem
+                    {
+                        Value = e.IdEscuela.ToString(),
+                        Text = e.NombreEscuela
+                    })
+            };
 
-            var proveedores = _proveedorHelper.GetProveedores();
-            model.ListaProveedores = proveedores.Select(p => new SelectListItem
-            {
-                Value = p.IdProveedor.ToString(),
-                Text = p.NombreProveedor
-            }).ToList();
-
-            return View(model);
+            return View(viewModel);
         }
 
-        // POST: ProductoController/Create
+        // POST: Producto/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult Create(ProductoViewModel producto)
         {
-            if (!ModelState.IsValid)
-            {
-                Console.WriteLine("ModelState es inválido. Detalles:");
-                foreach (var key in ModelState.Keys)
-                {
-                    var state = ModelState[key];
-                    foreach (var error in state.Errors)
-                    {
-                        Console.WriteLine($"Clave: {key}, Error: {error.ErrorMessage}");
-                    }
-                }
-                CargarListasDeSeleccion(producto);
-                return View(producto);
-            }
-
-            if (producto.ImagenArchivo != null && producto.ImagenArchivo.Length > 0)
+            if (ModelState.IsValid)
             {
                 try
                 {
-                    using (var ms = new MemoryStream())
-                    {
-                        producto.ImagenArchivo.CopyTo(ms);
-                        producto.Imagen = ms.ToArray(); 
-                    }
+                    _productoHelper.Add(producto);
+                    return RedirectToAction(nameof(Index));
                 }
                 catch (Exception ex)
                 {
-                    ModelState.AddModelError("", "Hubo un error al procesar la imagen: " + ex.Message);
-                    CargarListasDeSeleccion(producto);
-                    return View(producto);
+                    ModelState.AddModelError(string.Empty, ex.Message);
+                }
+            }
+            if (producto.ImagenFile != null)
+            {
+                using (var ms = new MemoryStream())
+                {
+                    producto.ImagenFile.CopyTo(ms);
+                    producto.Imagen = ms.ToArray();
                 }
             }
 
-            try
-            {
-                _productoHelper.Add(producto);
-            }
-            catch (Exception ex)
-            {
-                ModelState.AddModelError("", "Hubo un error al agregar el producto: " + ex.Message);
-                CargarListasDeSeleccion(producto);
-                return View(producto);
-            }
 
-            return RedirectToAction("Index");
-        }
-
-        private void CargarListasDeSeleccion(ProductoViewModel producto)
-        {
-            var proveedores = _proveedorHelper.GetProveedores();
-            producto.ListaProveedores = proveedores.Select(p => new SelectListItem
-            {
-                Value = p.IdProveedor.ToString(),
-                Text = p.NombreProveedor
-            }).ToList();
-
-            var escuelas = _escuelaHelper.GetEscuelas();
-            producto.ListaEscuelas = escuelas.Select(e => new SelectListItem
-            {
-                Value = e.IdEscuela.ToString(),
-                Text = e.NombreEscuela
-            }).ToList();
-        }
-
-
-
-
-
-        // GET: ProductoController/Edit/5
-        [Authorize(Roles = "Admin")]
-        public ActionResult Edit(int id)
-        {
-            var producto = _productoHelper.GetProducto(id);
-
-            if (producto == null)
-            {
-                return NotFound();
-            }
-
-            if (producto.Imagen != null)
-            {
-                producto.ImagenBase64 = $"data:image/jpeg;base64,{Convert.ToBase64String(producto.Imagen)}";
-            }
-
-            var proveedores = _proveedorHelper.GetProveedores();
-            producto.ListaProveedores = proveedores
+            // Repoblar listas desplegables en caso de error
+            producto.ListaProveedores = _proveedorHelper.GetProveedores()
                 .Select(p => new SelectListItem
                 {
                     Value = p.IdProveedor.ToString(),
                     Text = p.NombreProveedor
-                }).ToList();
-
-            var escuelas = _escuelaHelper.GetEscuelas();
-            producto.ListaEscuelas = escuelas
+                });
+            producto.ListaEscuelas = _escuelaHelper.GetEscuelas()
                 .Select(e => new SelectListItem
                 {
                     Value = e.IdEscuela.ToString(),
                     Text = e.NombreEscuela
-                }).ToList();
+                });
 
             return View(producto);
         }
 
 
-        // POST: ProductoController/Edit/5
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Edit(ProductoViewModel producto)
-        {
-            try
-            {
-                var productoOriginal = _productoHelper.GetProducto(producto.IdProducto);
-                if (productoOriginal == null)
-                {
-                    return NotFound();
-                }
-
-                if (producto.ImagenArchivo == null || producto.ImagenArchivo.Length == 0)
-                {
-                    producto.Imagen = productoOriginal.Imagen; 
-                }
-                else
-                {
-                    using (var ms = new MemoryStream())
-                    {
-                        producto.ImagenArchivo.CopyTo(ms);
-                        producto.Imagen = ms.ToArray(); 
-                    }
-                }
-
-                var productoActualizado = _productoHelper.Update(producto);
-
-                return RedirectToAction(nameof(Index));
-            }
-            catch
-            {
-                return View(producto);
-            }
-        }
-
-
-
-
         [Authorize(Roles = "Admin")]
-        // GET: ProductoController/Delete/5
-        public ActionResult Delete(int id)
+        // GET: Producto/Edit/5
+        public IActionResult Edit(int? id)
         {
-            var producto = _productoHelper.GetProducto(id);
+            if (id == null)
+            {
+                return NotFound();
+            }
 
+            var producto = _productoHelper.GetProducto(id);
             if (producto == null)
             {
                 return NotFound();
             }
 
-            var proveedor = _proveedorHelper.GetProveedor(producto.IdProveedor);
+            producto.ListaProveedores = _proveedorHelper.GetProveedores()
+                .Select(p => new SelectListItem
+                {
+                    Value = p.IdProveedor.ToString(),
+                    Text = p.NombreProveedor
+                });
+            producto.ListaEscuelas = _escuelaHelper.GetEscuelas()
+                .Select(e => new SelectListItem
+                {
+                    Value = e.IdEscuela.ToString(),
+                    Text = e.NombreEscuela
+                });
 
-            producto.NombreProveedor = proveedor?.NombreProveedor;
+            return View(producto);
+        }
 
-            var escuela = _escuelaHelper.GetEscuela(producto.IdEscuela);
-
-            producto.NombreEscuela = escuela?.NombreEscuela;
-
-            if (producto.Imagen != null)
+        // POST: Producto/Edit/5
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult Edit(int id, ProductoViewModel producto)
+        {
+            if (id != producto.IdProducto)
             {
-                string base64Image = Convert.ToBase64String(producto.Imagen);
-                producto.ImagenBase64 = $"data:image/jpeg;base64,{base64Image}";
+                return NotFound();
             }
+
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    // Manejar la carga de imagen de manera similar al método Add
+                    if (producto.ImagenFile != null)
+                    {
+                        using (var ms = new MemoryStream())
+                        {
+                            producto.ImagenFile.CopyTo(ms);
+                            producto.Imagen = ms.ToArray();
+                        }
+                    }
+
+                    _productoHelper.Update(producto);
+                    return RedirectToAction(nameof(Index));
+                }
+                catch (Exception ex)
+                {
+                    ModelState.AddModelError(string.Empty, ex.Message);
+                }
+            }
+
+            // Repoblar listas desplegables en caso de error
+            producto.ListaProveedores = _proveedorHelper.GetProveedores()
+                .Select(p => new SelectListItem
+                {
+                    Value = p.IdProveedor.ToString(),
+                    Text = p.NombreProveedor
+                });
+            producto.ListaEscuelas = _escuelaHelper.GetEscuelas()
+                .Select(e => new SelectListItem
+                {
+                    Value = e.IdEscuela.ToString(),
+                    Text = e.NombreEscuela
+                });
 
             return View(producto);
         }
 
 
+        [Authorize(Roles = "Admin")]
+        // GET: Producto/Delete/5
+        public IActionResult Delete(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
 
-        // POST: ProductoController/Delete/5
-        [HttpPost]
+            var producto = _productoHelper.GetProducto(id);
+            if (producto == null)
+            {
+                return NotFound();
+            }
+
+            return View(producto);
+        }
+
+        // POST: Producto/Delete/5
+        [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        public IActionResult DeleteConfirmed(int IdProducto)
+        public IActionResult DeleteConfirmed(int id)
         {
             try
             {
-                _productoHelper.Delete(IdProducto);
-
+                _productoHelper.Delete(id);
                 return RedirectToAction(nameof(Index));
             }
             catch (Exception ex)
             {
-                ModelState.AddModelError("", "Hubo un problema al eliminar el producto del día: " + ex.Message);
-
-                var producto = _productoHelper.GetProducto(IdProducto);
-                return View("Delete", producto);
+                return View("Delete", _productoHelper.GetProducto(id));
             }
         }
 
+        public IActionResult MostrarImagen(int id)
+        {
+            var producto = _productoHelper.GetProducto(id);
+
+            if (producto?.Imagen == null)
+            {
+                return NotFound();
+            }
+
+            // Detección de tipo MIME
+            string mimeType = "application/octet-stream"; // Tipo MIME predeterminado
+            if (producto.ImagenFile != null)
+            {
+                var extension = Path.GetExtension(producto.ImagenFile.FileName).ToLowerInvariant();
+                mimeType = extension switch
+                {
+                    ".jpg" or ".jpeg" => "image/jpeg",
+                    ".png" => "image/png",
+                    ".gif" => "image/gif",
+                    _ => "application/octet-stream"
+                };
+            }
+
+            return File(producto.Imagen, mimeType);
+        }
     }
 }

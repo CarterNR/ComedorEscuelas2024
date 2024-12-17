@@ -9,38 +9,34 @@ namespace FrontEnd.Models
     {
         public int IdProducto { get; set; }
 
-        [Required(ErrorMessage = "El nombre del producto es obligatorio.")]
+        [Required(ErrorMessage = "El nombre del producto es requerido")]
+        [Display(Name = "Nombre del Producto")]
         public string? NombreProducto { get; set; }
 
-        public string? NombreEscuela { get; set; }
-
-        public string? NombreProveedor { get; set; }
-
-        [Required(ErrorMessage = "La cantidad es obligatoria.")]
-        [Range(1, int.MaxValue, ErrorMessage = "La cantidad debe ser mayor a 0.")]
+        [Required(ErrorMessage = "La cantidad es requerida")]
         public int? Cantidad { get; set; }
 
         public byte[]? Imagen { get; set; }
+        [Display(Name = "Imagen del Producto")]
+        [DataType(DataType.Upload)]
+        [MaxFileSize(5 * 1024 * 1024)] // 5MB máximo
+        [AllowedExtensions(new string[] { ".jpg", ".jpeg", ".png", ".gif" })]
+        public IFormFile? ImagenFile { get; set; }
 
-        public string? ImagenBase64 { get; set; }
-
-
-        [Display(Name = "Cargar Imagen")]
-        public IFormFile? ImagenArchivo { get; set; }
-
-        [Required(ErrorMessage = "El estado es obligatorio.")]
         public bool? Estado { get; set; }
 
-        [Required(ErrorMessage = "Debe seleccionar un proveedor.")]
+        [Required(ErrorMessage = "Debe seleccionar un proveedor")]
+        [Display(Name = "Proveedor")]
         public int? IdProveedor { get; set; }
 
-        [Required(ErrorMessage = "Debe seleccionar una escuela.")]
+        [Required(ErrorMessage = "Debe seleccionar una escuela")]
+        [Display(Name = "Escuela")]
         public int? IdEscuela { get; set; }
 
-        public List<SelectListItem>? ListaProductos { get; set; }
-
-        public IEnumerable<SelectListItem> ListaEscuelas { get; set; } = new List<SelectListItem>();
+        public string? NombreProveedor { get; set; }
+        public string? NombreEscuela { get; set; }
 
         public IEnumerable<SelectListItem> ListaProveedores { get; set; } = new List<SelectListItem>();
+        public IEnumerable<SelectListItem> ListaEscuelas { get; set; } = new List<SelectListItem>();
     }
 }
