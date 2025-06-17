@@ -1,0 +1,17 @@
+﻿@model IEnumerable<FrontEnd.Models.EstudianteViewModel>
+
+@{
+    ViewData["Title"] = "Perfil";
+}
+
+<h2>Bienvenido, @Model.Nombre</h2>
+<p>Tiquetes restantes: @Model.TiquetesRestantes</p>
+
+<!-- Mostrar QR -->
+<div>
+    <p>Escanea el siguiente código QR para registrarte en el comedor:</p>
+    <img src="https://api.qrserver.com/v1/create-qr-code/?data=@ViewBag.QRCodeUrl&size=200x200" alt="Código QR" />
+</div>
+
+<a href="/Estudiantes/Logout">Cerrar sesión</a>
+

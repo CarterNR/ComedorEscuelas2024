@@ -15,8 +15,6 @@ namespace FrontEnd.Controllers
             this.securityHelper = securityHelper;
         }
 
-
-        [Authorize(Roles = "Admin")]
         public IActionResult Register()
         {
             return View(new RegisterViewModel());

@@ -24,7 +24,7 @@ namespace FrontEnd.Controllers
         }
         // GET: ProductoDiaController
 
-        [Authorize(Roles = "Admin, Producto")]
+       // [Authorize(Roles = "Admin, Producto")]
         public ActionResult Index()
         {
             var listaProductoDia = _productodiaHelper.GetProductosDia();
@@ -65,7 +65,7 @@ namespace FrontEnd.Controllers
             return View(productodia);  
         }
 
-        [Authorize(Roles = "Admin, Producto")]
+       // [Authorize(Roles = "Admin, Producto")]
         // GET: ProductoDiaController/Create
         public IActionResult Create()
         {
@@ -151,7 +151,7 @@ namespace FrontEnd.Controllers
 
 
 
-        [Authorize(Roles = "Admin, Producto")]
+      //  [Authorize(Roles = "Admin, Producto")]
         // GET: ProductoDiaController/Edit/5
         public ActionResult Edit(int id)
         {
@@ -239,7 +239,7 @@ namespace FrontEnd.Controllers
         }
 
 
-        [Authorize(Roles = "Admin, Producto")]
+       // [Authorize(Roles = "Admin, Producto")]
         // GET: ProductoDiaController/Delete/5
         public ActionResult Delete(int id)
         {

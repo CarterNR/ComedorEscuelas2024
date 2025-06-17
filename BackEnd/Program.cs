@@ -98,6 +98,9 @@ builder.Services.AddScoped<IEstadoPedidoService, EstadoPedidoService>();
 builder.Services.AddScoped<IEscuelaDAL, EscuelaDALImpl>();
 builder.Services.AddScoped<IEscuelaService, EscuelaService>();
 
+builder.Services.AddScoped<IEstudianteDAL, EstudianteDALImpl>();
+builder.Services.AddScoped<IEstudianteService, EstudianteService>();
+
 builder.Services.AddScoped<IRolDAL, RolDALImpl>();
 builder.Services.AddScoped<IRolService, RolService>();
 

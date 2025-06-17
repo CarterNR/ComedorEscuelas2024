@@ -12,7 +12,7 @@ builder.Services.AddControllersWithViews();
 
 #region
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
-                .AddCookie(x => x.LoginPath = "/Login/Login");
+                .AddCookie(x => x.LoginPath = "/Login/LoginEscuelas");
 
 builder.Services.AddSession();
 
@@ -20,6 +20,7 @@ builder.Services.AddSession();
 builder.Services.AddHttpClient<IServiceRepository, ServiceRepository>();
 builder.Services.AddScoped<IServiceRepository, ServiceRepository>();
 builder.Services.AddScoped<IEscuelaHelper, EscuelaHelper>();
+builder.Services.AddScoped<IEstudianteHelper, EstudianteHelper>();
 builder.Services.AddScoped<IPedidoHelper, PedidoHelper>();
 builder.Services.AddScoped<IProductoHelper, ProductoHelper>();
 builder.Services.AddScoped<IProductoDiaHelper, ProductoDiaHelper>();
@@ -52,8 +53,7 @@ app.UseAuthorization();
 
 app.MapControllerRoute(
     name: "default",
-    pattern: "{controller=Home}/{action=Index}/{id?}");
+ pattern: "{controller=Estudiante}/{action=Index}/{id?}");
+//pattern: "{controller=Home}/{action=Index}");
 
 app.Run();
-
-

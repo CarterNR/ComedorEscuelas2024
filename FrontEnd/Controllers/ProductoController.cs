@@ -27,14 +27,14 @@ namespace FrontEnd.Controllers
         }
 
         // GET: Producto
-        [Authorize(Roles = "Admin")]
+//        [Authorize(Roles = "Admin")]
         public IActionResult Index()
         {
             var productos = _productoHelper.GetProductos();
             return View(productos);
         }
 
-        [Authorize(Roles = "Admin")]
+       // [Authorize(Roles = "Admin")]
         // GET: Producto/Details/5
         public IActionResult Details(int? id)
         {
@@ -52,7 +52,7 @@ namespace FrontEnd.Controllers
             return View(producto);
         }
 
-        [Authorize(Roles = "Admin")]
+      //  [Authorize(Roles = "Admin")]
         // GET: Producto/Create
         public IActionResult Create()
         {
@@ -120,7 +120,7 @@ namespace FrontEnd.Controllers
         }
 
 
-        [Authorize(Roles = "Admin")]
+     //   [Authorize(Roles = "Admin")]
         // GET: Producto/Edit/5
         public IActionResult Edit(int? id)
         {
@@ -202,7 +202,7 @@ namespace FrontEnd.Controllers
         }
 
 
-        [Authorize(Roles = "Admin")]
+   //     [Authorize(Roles = "Admin")]
         // GET: Producto/Delete/5
         public IActionResult Delete(int? id)
         {
