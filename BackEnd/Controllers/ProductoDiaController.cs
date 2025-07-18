@@ -60,5 +60,7 @@ namespace BackEnd.Controllers
             };
             productoDiaService.Eliminar(productoDia);
         }
+
+
     }
 }

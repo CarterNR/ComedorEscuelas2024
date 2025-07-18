@@ -19,7 +19,7 @@ namespace FrontEnd.Controllers
             _escuelaHelper = escuelaHelper;
         }
         // GET: ProveedorController
-        [Authorize(Roles = "Admin")]
+       // [Authorize(Roles = "Admin")]
         public ActionResult Index()
         {
             var lista = _proveedorHelper.GetProveedores();
@@ -27,7 +27,7 @@ namespace FrontEnd.Controllers
         }
 
         // GET: ProveedorController/Details/5
-        [Authorize(Roles = "Admin")]
+       // [Authorize(Roles = "Admin")]
         public ActionResult Details(int id)
         {
             var proveedor = _proveedorHelper.GetProveedor(id);
@@ -44,7 +44,7 @@ namespace FrontEnd.Controllers
         }
 
         // GET: ProveedorController/Create
-        [Authorize(Roles = "Admin")]
+      //  [Authorize(Roles = "Admin")]
         public IActionResult Create()
         {
             var model = new ProveedorViewModel();
@@ -106,7 +106,7 @@ namespace FrontEnd.Controllers
 
 
         // GET: ProveedorController/Edit/5
-        [Authorize(Roles = "Admin")]
+      //  [Authorize(Roles = "Admin")]
         public ActionResult Edit(int id)
         {
             var proveedor = _proveedorHelper.GetProveedor(id);
@@ -152,7 +152,7 @@ namespace FrontEnd.Controllers
         }
 
         // GET: ProveedorController/Delete/5
-        [Authorize(Roles = "Admin")]
+     //   [Authorize(Roles = "Admin")]
         public ActionResult Delete(int id)
         {
             var proveedor = _proveedorHelper.GetProveedor(id);

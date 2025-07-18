@@ -1,122 +1,155 @@
-﻿@model List<ProductoViewModel>
+﻿
 
+@model List<ProductoViewModel>
 
-<div class="content-page">
-    <div class="container-fluid">
-        <div class="row">
-            <div class="col-lg-4">
-                <div class="card card-transparent card-block card-stretch card-height border-none">
-                    <div class="card-body p-0 mt-lg-2 mt-0">
-                        <h4 class="logo-title light-logo ml-3" style="color:#32BDEA;">¡Bienvenido al comedor!</h4>
-                            
+@{
+    var rol = Context.Session.GetInt32("IdRol");
+}
 
-                        </a>
+<style>
+    .border-3 {
+        border-width: 3px !important;
+    }
+</style>
+
+<div class="container-fluid">
+    <div class="row justify-content-center mt-4">
+        <div class="col-12 text-center">
+            <br><br><h2 style="color: #32BDEA; font-weight: bold;">¡Bienvenido al comedor!</h2><br><br>
+        </div>
+    </div>
+
+    <div class="row justify-content-center mt-4">
+
+        @if (rol == 1)
+        {
+            <div class="row justify-content-center">
+
+                <div class="col-lg-3 col-md-4 col-sm-6 mb-3">
+                    <div class="card text-center border-3 border-info shadow-sm" style="height: 180px; cursor: pointer;" onclick="location.href='/ProductoDia/Index'">
+                        <div class="card-body d-flex flex-column justify-content-center align-items-center p-2">
+                            <img src="../images/productosdia.png" alt="Productos del día" style="width: 60px; height: 60px;" class="mb-2">
+                            <p class="mb-0 fw-bold">Productos del día</p>
+                        </div>
                     </div>
                 </div>
-            </div>
-            <div class="col-lg-8">
-                <div class="row">
-                    <div class="col-lg-4 col-md-4">
-                        <div class="card card-block card-stretch card-height" style="cursor: pointer;" onclick="location.href='/ProductoDia/Index';">
-                            <div class="card-body">
-                                <div class="d-flex align-items-center mb-4 card-total-sale">
-                                    <div class="icon iq-icon-box-2 bg-info-light">
-                                        <img src="../images/productosdia.png" class="img-fluid" alt="image">
-                                    </div>
-                                    <div>
-                                        <p class="mb-2">Productos</p>
-                                        <p class="mb-2">del día</p>
 
-                                    </div>
-                                </div>
-                                <div class="iq-progress-bar mt-2">
-                                    <span class="bg-info iq-progress progress-1" data-percent="85">
-                                    </span>
-                                </div>
-                            </div>
+                <div class="col-lg-3 col-md-4 col-sm-6 mb-3">
+                    <div class="card text-center border-3 border-danger shadow-sm" style="height: 180px; cursor: pointer;" onclick="location.href='/Producto/Index'">
+                        <div class="card-body d-flex flex-column justify-content-center align-items-center p-2">
+                            <img src="../images/productos.png" alt="Productos" style="width: 60px; height: 60px;" class="mb-2">
+                            <p class="mb-0 fw-bold">Productos</p>
                         </div>
                     </div>
+                </div>
 
-         
-                        <div class="col-lg-4 col-md-4">
-                            <div class="card card-block card-stretch card-height" style="cursor: pointer;" onclick="location.href='/Producto/Index';">
-                                <div class="card-body">
-                                    <div class="d-flex align-items-center mb-4 card-total-sale">
-                                        <div class="icon iq-icon-box-2 bg-danger-light">
-                                            <img src="../images/productos.png" class="img-fluid" alt="image">
-                                        </div>
-                                        <div>
-                                            <p class="mb-2">Productos</p>
-                                        </div>
-                                    </div>
-                                    <div class="iq-progress-bar mt-2">
-                                        <span class="bg-danger iq-progress progress-1" data-percent="70">
-                                        </span>
-                                    </div>
-                                </div>
-                            </div>
+                <div class="col-lg-3 col-md-4 col-sm-6 mb-3">
+                    <div class="card text-center border-3 border-success shadow-sm" style="height: 180px; cursor: pointer;" onclick="location.href='/Pedido/Index'">
+                        <div class="card-body d-flex flex-column justify-content-center align-items-center p-2">
+                            <img src="../images/pedidos.png" alt="Pedidos" style="width: 60px; height: 60px;" class="mb-2">
+                            <p class="mb-0 fw-bold">Pedidos</p>
                         </div>
-                        <div class="col-lg-4 col-md-4">
-                            <div class="card card-block card-stretch card-height" style="cursor: pointer;" onclick="location.href='/Pedido/Index';">
-                                <div class="card-body">
-                                    <div class="d-flex align-items-center mb-4 card-total-sale">
-                                        <div class="icon iq-icon-box-2 bg-success-light">
-                                            <img src="../images/pedidos.png" class="img-fluid" alt="image">
-                                        </div>
-                                        <div>
-                                            <p class="mb-2">Pedidos</p>
-                                        </div>
-                                    </div>
-                                    <div class="iq-progress-bar mt-2">
-                                        <span class="bg-success iq-progress progress-1" data-percent="75">
-                                        </span>
-                                    </div>
-                                </div>
-                            </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-3 col-md-4 col-sm-6 mb-3">
+                    <div class="card text-center border-3 border-warning shadow-sm" style="height: 180px; cursor: pointer;" onclick="location.href='/Proveedor/Index'">
+                        <div class="card-body d-flex flex-column justify-content-center align-items-center p-2">
+                            <img src="../images/proveedor.jpeg" alt="Proveedores" style="width: 60px; height: 60px;" class="mb-2">
+                            <p class="mb-0 fw-bold">Proveedores</p>
                         </div>
-                   
-                    
+                    </div>
+                </div>
+
+                <div class="col-lg-3 col-md-4 col-sm-6 mb-3">
+                    <div class="card text-center border-3 border-warning shadow-sm" style="height: 180px; cursor: pointer;" onclick="location.href='/Usuario/Index'">
+                        <div class="card-body d-flex flex-column justify-content-center align-items-center p-2">
+                            <img src="../images/usuarios.png" alt="Usuarios" style="width: 60px; height: 60px;" class="mb-2">
+                            <p class="mb-0 fw-bold">Usuarios</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-3 col-md-4 col-sm-6 mb-3">
+                    <div class="card text-center border-3 border-info shadow-sm" style="height: 180px; cursor: pointer;" onclick="location.href='/Estudiante/Listado'">
+                        <div class="card-body d-flex flex-column justify-content-center align-items-center p-2">
+                            <img src="../images/estudiante.png" alt="Estudiantes" style="width: 60px; height: 60px;" class="mb-2">
+                            <p class="mb-0 fw-bold">Estudiantes</p>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        }
+    
+
+        @if (rol == 2)
+        {
+
+            <div class="row justify-content-center">
+
+                <div class="col-lg-4 col-md-6 col-sm-6 mb-3">
+                    <div class="card text-center border-3 border-info shadow-sm" style="height: 180px; cursor: pointer;" onclick="location.href='/ProductoDia/Index'">
+                        <div class="card-body d-flex flex-column justify-content-center align-items-center p-2">
+                            <img src="../images/productosdia.png" alt="Productos del día" style="width: 60px; height: 60px;" class="mb-2">
+                            <p class="mb-0 fw-bold">Productos del día</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-4 col-md-6 col-sm-6 mb-3">
+                    <div class="card text-center border-3 border-danger shadow-sm" style="height: 180px; cursor: pointer;" onclick="location.href='/Producto/Index'">
+                        <div class="card-body d-flex flex-column justify-content-center align-items-center p-2">
+                            <img src="../images/productos.png" alt="Productos" style="width: 60px; height: 60px;" class="mb-2">
+                            <p class="mb-0 fw-bold">Productos</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-4 col-md-6 col-sm-6 mb-3">
+                    <div class="card text-center border-3 border-success shadow-sm" style="height: 180px; cursor: pointer;" onclick="location.href='/Pedido/Index'">
+                        <div class="card-body d-flex flex-column justify-content-center align-items-center p-2">
+                            <img src="../images/pedidos.png" alt="Pedidos" style="width: 60px; height: 60px;" class="mb-2">
+                            <p class="mb-0 fw-bold">Pedidos</p>
+                        </div>
+                    </div>
                 </div>
             </div>
             <div class="col-12">
-                <div class="card card-block card-stretch card-height">
-                    <div class="card-header d-flex align-items-center justify-content-between">
-                        <div class="header-title">
-                            <h4 class="card-title">Productos</h4>
-                        </div>
+                <div class="card shadow">
+                    <div class="card-header text-center bg-info-light">
+                        <h4 class="mb-0">Productos</h4>
                     </div>
                     <div class="card-body">
-                        <ul class="list-unstyled row top-product mb-0 justify-content-center">
+                        <ul class="list-unstyled row justify-content-center">
+
+
                             @foreach (var producto in Model)
                             {
                                 <li class="col-lg-2 col-md-3 col-sm-4 col-6 mb-2">
-                                        <div class="card-body p-1">
-                                            <div class="bg-warning-light rounded text-center">
-                                                @if (producto.Imagen != null)
-                                                {
-                                                    <img src="data:image/jpeg;base64,@Convert.ToBase64String(producto.Imagen)"
-                                                         class="style-img img-fluid p-1 compact-img" alt="@producto.NombreProducto">
-                                                }
-                                                else
-                                                {
-                                                    <img src="../assets/images/product/default.png"
-                                                         class="style-img img-fluid p-1 compact-img" alt="default-image">
-                                                }
-                                            </div>
-                                            <div class="style-text text-center mt-1">
-                                                <h6 class="mb-1 text-truncate compact-text">@producto.NombreProducto</h6>
-                                                <p class="mb-0 text-truncate compact-text">@producto.Cantidad</p>
-                                            </div>
+                                    <div class="card text-center shadow" style="height: 180px;">
+                                        <div class="card-body p-2 d-flex flex-column justify-content-center align-items-center">
+                                            @if (producto.Imagen != null)
+                                            {
+                                                <img src="data:image/jpeg;base64,@Convert.ToBase64String(producto.Imagen)"
+                                                     alt="@producto.NombreProducto" style="width: 60px; height: 60px;" />
+                                            }
+                                            else
+                                            {
+                                                <img src="../assets/images/product/default.png"
+                                                     alt="default-image" style="width: 60px; height: 60px;" />
+                                            }
+                                            <h6 class="mt-2 mb-1 text-truncate" style="font-size: 0.85rem;">@producto.NombreProducto</h6>
+                                            <p class="mb-0" style="font-size: 0.8rem;">@producto.Cantidad</p>
                                         </div>
+                                    </div>
                                 </li>
                             }
                         </ul>
                     </div>
                 </div>
             </div>
-
-
-            
+        }
     </div>
 </div>
-    </div>
+

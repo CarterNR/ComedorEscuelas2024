@@ -35,8 +35,9 @@
                             </div>
                         </div>
                         <div class="card-body">
-                            <form asp-action="Edit" method="post">
-                                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                            <form asp-action="Edit" asp-route-id="@Model.IdProducto" method="post" enctype="multipart/form-data">
+
+            
 
                                 @Html.HiddenFor(model => model.IdProducto)
 

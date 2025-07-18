@@ -1,16 +1,49 @@
 ﻿using FrontEnd.ApiModels;
 using FrontEnd.Helpers.Interfaces;
 using FrontEnd.Models;
+using Microsoft.AspNetCore.Identity;
 using Newtonsoft.Json;
 using System.ComponentModel;
+using System.Net.Http;
+using System.Text;
 
 namespace FrontEnd.Helpers.Implementations
 {
     public class UsuarioHelper : IUsuarioHelper
     {
-        IServiceRepository _ServiceRepository;
 
-        Usuario Convertir(UsuarioViewModel usuario)
+        private readonly IServiceRepository _ServiceRepository;
+
+
+        public UsuarioHelper(IServiceRepository serviceRepository)
+        {
+            _ServiceRepository = serviceRepository;
+
+        }
+
+        public UsuarioViewModel Autenticar(string nombreUsuario, string clave)
+        {
+            var login = new
+            {
+                NombreUsuario = nombreUsuario,
+                Clave = clave
+            };
+
+            HttpResponseMessage response = _ServiceRepository.PostResponse("api/usuario/login", login);
+
+            if (response.IsSuccessStatusCode)
+            {
+                var contenido = response.Content.ReadAsStringAsync().Result;
+                var usuario = JsonConvert.DeserializeObject<UsuarioViewModel>(contenido);
+                return usuario;
+            }
+
+            return null;
+        }
+
+
+
+        private Usuario Convertir(UsuarioViewModel usuario)
         {
             return new Usuario
             {
@@ -24,16 +57,43 @@ namespace FrontEnd.Helpers.Implementations
                 Clave = usuario.Clave,
                 Estado = usuario.Estado,
                 IdEscuela = usuario.IdEscuela,
-                IdRol = usuario.IdRol
+                IdRol = usuario.IdRol,
+                NombreUsuario = usuario.NombreUsuario
 
-    };
+            };
         }
 
-
-        public UsuarioHelper(IServiceRepository serviceRepository)
+        public async Task<List<UsuarioViewModel>> GetUsuariosAsync()
         {
-            _ServiceRepository = serviceRepository;
+            var responseMessage = await _ServiceRepository.GetResponseAsync("api/Usuario");
+            var usuarios = new List<Usuario>();
+
+            if (responseMessage.IsSuccessStatusCode)
+            {
+                var content = await responseMessage.Content.ReadAsStringAsync();
+                usuarios = JsonConvert.DeserializeObject<List<Usuario>>(content);
+            }
+
+            var resultado = usuarios.Select(item => new UsuarioViewModel
+            {
+                IdUsuario = item.IdUsuario,
+                NombreCompleto = item.NombreCompleto,
+                IdTipoCedula = item.IdTipoCedula,
+                Cedula = item.Cedula,
+                Telefono = item.Telefono,
+                Direccion = item.Direccion,
+                CorreoElectronico = item.CorreoElectronico,
+                Clave = item.Clave,
+                Estado = item.Estado,
+                IdEscuela = item.IdEscuela,
+                IdRol = item.IdRol,
+                NombreUsuario = item.NombreUsuario
+            }).ToList();
+
+            return resultado;
         }
+
+
 
         public UsuarioViewModel Add(UsuarioViewModel usuario)
         {
@@ -42,18 +102,59 @@ namespace FrontEnd.Helpers.Implementations
             {
 
                 var content = response.Content.ReadAsStringAsync().Result;
+                Console.WriteLine("Usuario creado exitosamente. Respuesta del servidor: " + content);
+            }
+            else
+            {
+                var errorContent = response.Content.ReadAsStringAsync().Result;
+                Console.WriteLine("Error al crear el usuario. Código de estado: " + response.StatusCode);
+                Console.WriteLine("Detalles del error: " + errorContent);
+                throw new Exception("Error al crear el usuario: " + errorContent);
             }
             return usuario;
         }
 
         public void Delete(int id)
         {
-            HttpResponseMessage responseMessage = _ServiceRepository.DeleteResponse("api/Usuario/" + id.ToString());
-            if (responseMessage.IsSuccessStatusCode) { var content = responseMessage.Content; }
+            // Buscar el usuario primero
+            UsuarioViewModel usuario = GetUsuario(id);
 
+            if (usuario != null && usuario.IdRol != null)
+            {
+                // Buscar el rol del usuario (si es estudiante)
+                // Buscar estudiante asociado
+                HttpResponseMessage estudianteResponse = _ServiceRepository.GetResponse("api/Estudiante/porUsuario/" + id);
+                if (estudianteResponse.IsSuccessStatusCode)
+                {
+                    var estudianteContent = estudianteResponse.Content.ReadAsStringAsync().Result;
 
+                    if (!string.IsNullOrWhiteSpace(estudianteContent) && estudianteContent != "null")
+                    {
+                        var estudiante = JsonConvert.DeserializeObject<Estudiante>(estudianteContent);
 
+                        if (estudiante != null)
+                        {
+                            // Eliminar estudiante
+                            HttpResponseMessage deleteEst = _ServiceRepository.DeleteResponse("api/Estudiante/" + estudiante.IdEstudiante);
+                            if (!deleteEst.IsSuccessStatusCode)
+                            {
+                                throw new Exception("Error al eliminar el estudiante antes de borrar el usuario.");
+                            }
+                        }
+                    }
+                }
+
+            }
+
+            // Finalmente eliminar el usuario
+            HttpResponseMessage responseMessage = _ServiceRepository.DeleteResponse("api/Usuario/" + id);
+            if (!responseMessage.IsSuccessStatusCode)
+            {
+                var error = responseMessage.Content.ReadAsStringAsync().Result;
+                throw new Exception("Error al eliminar el usuario: " + error);
+            }
         }
+
 
         public List<UsuarioViewModel> GetUsuarios()
         {
@@ -68,6 +169,23 @@ namespace FrontEnd.Helpers.Implementations
             List<UsuarioViewModel> resultado = new List<UsuarioViewModel>();
             foreach (var item in usuarios)
             {
+
+                Escuela escuela = null;
+
+                try
+                {
+                    HttpResponseMessage escuelaResponse = _ServiceRepository.GetResponse("api/Escuela/" + item.IdEscuela);
+                    if (escuelaResponse.IsSuccessStatusCode)
+                    {
+                        var escuelaContent = escuelaResponse.Content.ReadAsStringAsync().Result;
+                        escuela = JsonConvert.DeserializeObject<Escuela>(escuelaContent);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Error al obtener datos de la escuela: {ex.Message}");
+                }
+
                 resultado.Add(
                             new UsuarioViewModel
                             {
@@ -81,7 +199,10 @@ namespace FrontEnd.Helpers.Implementations
                                 Clave = item.Clave,
                                 Estado = item.Estado,
                                 IdEscuela = item.IdEscuela,
-                                IdRol = item.IdRol
+                                IdRol = item.IdRol,
+                                NombreUsuario = item.NombreUsuario,
+                                NombreEscuela = escuela?.NombreEscuela ?? "Desconocido"
+
                             }
                     );
             }
@@ -112,7 +233,8 @@ namespace FrontEnd.Helpers.Implementations
                                 Clave = usuario.Clave,
                                 Estado = usuario.Estado,
                                 IdEscuela = usuario.IdEscuela,
-                                IdRol = usuario.IdRol
+                                IdRol = usuario.IdRol,
+                                NombreUsuario = usuario.NombreUsuario
                             };
 
 
@@ -129,5 +251,6 @@ namespace FrontEnd.Helpers.Implementations
             }
             return usuario;
         }
+
     }
 }

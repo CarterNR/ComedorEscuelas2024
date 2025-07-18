@@ -5,9 +5,14 @@
 
         HttpClient Client { get; set; }
 
+        Task<HttpResponseMessage> GetResponseAsync(string url);
+
         HttpResponseMessage GetResponse(string url);
         HttpResponseMessage PutResponse(string url, object model);
         HttpResponseMessage PostResponse(string url, object model);
         HttpResponseMessage DeleteResponse(string url);
+
+
+
     }
 }

@@ -1,12 +1,14 @@
-﻿@model FrontEnd.Models.UsersViewModel
+﻿@model FrontEnd.Models.EstudianteViewModel
 
 @{
-    ViewData["Title"] = "Delete";
+    Layout = null;
+    ViewData["Title"] = "Details";
 }
 
 <!DOCTYPE html>
 <html>
 <head>
+
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <title>@ViewData["Title"]</title>
@@ -20,6 +22,7 @@
 </head>
 
 <body>
+
     <div class="content-page">
         <div class="container-fluid add-form-list">
             <div class="row">
@@ -27,38 +30,66 @@
                     <div class="card">
                         <div class="card-header d-flex justify-content-between">
                             <div class="header-title d-flex align-items-center">
-                                <a asp-action="Index" class="btn btn-info mr-2">
+                                <a asp-action="Listado" class="btn btn-info mr-2">
                                     <i class="fas fa-arrow-left"></i>
                                 </a>
-                                <h4 class="card-title mb-0">¿Eliminar usuario?</h4>
+                                <h4 class="card-title mb-0">Detalles del estudiante</h4>
                             </div>
                         </div>
+
                         <div class="card-body">
                             <dl class="row">
+
+                                <dt class="col-sm-2">
+                                    <label>ID Estudiante</label>
+                                </dt>
+                                <dd class="col-sm-10">
+                                    @Html.DisplayFor(model => model.IdEstudiante)
+                                </dd>
+
                                 <dt class="col-sm-2">
                                     <label>ID Usuario</label>
                                 </dt>
                                 <dd class="col-sm-10">
-                                    @Html.DisplayFor(model => model.Id)
+                                    @Html.DisplayFor(model => model.IdUsuario)
                                 </dd>
+
                                 <dt class="col-sm-2">
                                     <label>Nombre de Usuario</label>
                                 </dt>
                                 <dd class="col-sm-10">
-                                    @Html.DisplayFor(model => model.UserName)
+                                    @Html.DisplayFor(model => model.NombreUsuario)
                                 </dd>
+
                                 <dt class="col-sm-2">
-                                    <label>Correo Electrónico</label>
+                                    <label>Nombre Completo</label>
                                 </dt>
                                 <dd class="col-sm-10">
-                                    @Html.DisplayFor(model => model.Email)
+                                    @Html.DisplayFor(model => model.Nombre)
                                 </dd>
+
+                                <dt class="col-sm-2">
+                                    <label>Número de Cédula</label>
+                                </dt>
+                                <dd class="col-sm-10">
+                                    @Html.DisplayFor(model => model.Cedula)
+                                </dd>
+
+                                <dt class="col-sm-2">
+                                    <label>Escuela</label>
+                                </dt>
+                                <dd class="col-sm-10">
+                                    @Html.DisplayFor(model => model.NombreEscuela)
+                                </dd>
+
+                                <dt class="col-sm-2">
+                                    <label>Cantidad Tiquetes</label>
+                                </dt>
+                                <dd class="col-sm-10">
+                                    @Html.DisplayFor(model => model.TiquetesRestantes)
+                                </dd>
+
                             </dl>
-                            <form asp-action="DeleteConfirmed">
-                                @Html.HiddenFor(model => model.Id)
-                                <input type="submit" value="Eliminar" class="btn btn-danger" />
-                                <a asp-action="Index" class="btn btn-secondary ml-2">Cancelar</a>
-                            </form>
                         </div>
                     </div>
                 </div>
@@ -66,6 +97,9 @@
         </div>
     </div>
 
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="/lib/jquery/dist/jquery.min.js"></script>
     <script src="/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="/js/backend-bundle.min.js"></script>

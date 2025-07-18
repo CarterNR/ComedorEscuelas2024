@@ -129,14 +129,6 @@ namespace FrontEnd.Controllers
                 Text = e.NombreEscuela
             }).ToList();
 
-            var usuarios = _usuarioHelper.GetUsuarios();
-
-            model.ListaUsuarios = usuarios.Select(e => new SelectListItem
-            {
-                Value = e.IdUsuario.ToString(),
-                Text = e.NombreCompleto
-            }).ToList();
-
             var estadopedidos = _estadoPedidoHelper.GetEstadoPedidos();
 
             model.ListaEstadoPedidos = estadopedidos.Select(e => new SelectListItem
@@ -195,13 +187,6 @@ namespace FrontEnd.Controllers
             {
                 Value = e.IdEscuela.ToString(),
                 Text = e.NombreEscuela
-            }).ToList();
-
-            var usuarios = _usuarioHelper.GetUsuarios();
-            pedido.ListaUsuarios = usuarios.Select(e => new SelectListItem
-            {
-                Value = e.IdUsuario.ToString(),
-                Text = e.NombreCompleto
             }).ToList();
 
             var estadopedidos = _estadoPedidoHelper.GetEstadoPedidos();

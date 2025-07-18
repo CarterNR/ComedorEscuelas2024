@@ -1,4 +1,11 @@
-﻿
+﻿@{
+    var nombreUsuario = Context.Session.GetString("NombreUsuario");
+    var idRol = Context.Session.GetInt32("IdRol");
+    var autenticado = !string.IsNullOrEmpty(nombreUsuario);
+    int? rol = Context.Session.GetInt32("IdRol");
+
+}
+
 <!doctype html>
 <html lang="en">
 <head>
@@ -38,6 +45,7 @@
                 <nav class="iq-sidebar-menu">
                     <ul id="iq-sidebar-toggle" class="iq-menu">
 
+
                         <li class="">
                             <a asp-area="" asp-controller="ProductoDia" asp-action="Index">
                                 <svg class="svg-icon" id="p-dash5" width="20" height="20" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -48,32 +56,39 @@
                             </a>
 
                         </li>
-                        @if (User.IsInRole("Admin"))
+
+                        <li class="">
+                            <a asp-area="" asp-controller="Producto" asp-action="Index">
+                                <svg class="svg-icon" id="p-dash7" width="20" height="20" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                                    <polyline points="14 2 14 8 20 8"></polyline>
+                                    <line x1="16" y1="13" x2="8" y2="13"></line>
+                                    <line x1="16" y1="17" x2="8" y2="17"></line>
+                                    <polyline points="10 9 9 9 8 9"></polyline>
+                                </svg>
+                                <span class="ml-4">Productos</span>
+                            </a>
+                        </li>
+
+                        <li class="">
+                            <a asp-area="" asp-controller="Pedido" asp-action="Index">
+                                <svg class="svg-icon" id="p-dash2" width="20" height="20" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <circle cx="9" cy="21" r="1"></circle>
+                                    <circle cx="20" cy="21" r="1"></circle>
+                                    <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+                                </svg>
+                                <span class="ml-4">Pedidos</span>
+                            </a>
+
+                        </li>
+
+
+                        @if (rol == 1) // Rol 1 = Admin
                         {
-                             <li class="">
-                                <a asp-area="" asp-controller="Producto" asp-action="Index">
-                                    <svg class="svg-icon" id="p-dash7" width="20" height="20" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-                                        <polyline points="14 2 14 8 20 8"></polyline>
-                                        <line x1="16" y1="13" x2="8" y2="13"></line>
-                                        <line x1="16" y1="17" x2="8" y2="17"></line>
-                                        <polyline points="10 9 9 9 8 9"></polyline>
-                                    </svg>
-                                    <span class="ml-4">Productos</span>
-                                </a>
-                           
-                            </li>
-                            <li class="">
-                                <a asp-area="" asp-controller="Pedido" asp-action="Index">                             
-                                    <svg class="svg-icon" id="p-dash2" width="20" height="20" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                        <circle cx="9" cy="21" r="1"></circle>
-                                        <circle cx="20" cy="21" r="1"></circle>
-                                        <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
-                                    </svg>
-                                    <span class="ml-4">Pedidos</span>
-                                </a>
-                           
-                            </li>
+
+
+   
+
                             <li class="">
                                 <a asp-area="" asp-controller="Proveedor" asp-action="Index">
                                     <svg class="svg-icon" id="p-dash9" width="20" height="20" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -87,14 +102,26 @@
                                 </a>
                             </li>
                             <li class="">
-                                <a asp-area="" asp-controller="User" asp-action="Index">
+                                <a asp-area="" asp-controller="Usuario" asp-action="Index">
                                     <svg class="svg-icon" id="user-icon" width="20" height="20" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                         <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zM12 14c-3.31 0-6 1.69-6 3v2h12v-2c0-1.31-2.69-3-6-3z" stroke="currentColor" fill="none"></path>
                                     </svg>
                                     <span class="ml-4">Usuarios</span>
                                 </a>
                             </li>
+
+                            <li class="">
+                                <a asp-area="" asp-controller="Estudiante" asp-action="Listado">
+                                    <svg class="svg-icon" id="user-icon" width="20" height="20" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zM12 14c-3.31 0-6 1.69-6 3v2h12v-2c0-1.31-2.69-3-6-3z" stroke="currentColor" fill="none"></path>
+                                    </svg>
+                                    <span class="ml-4">Estudiantes</span>
+                                </a>
+                            </li>
                         }
+
+
+                        
      
                     </ul>
                 </nav>
@@ -120,47 +147,44 @@
                             <h5 class="logo-title ml-3">Comedor Escolar</h5>
                         </a>
                     </div>
-                    <div class="d-flex align-items-center">
-                        <button class="navbar-toggler" type="button" data-toggle="collapse"
-                                data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
-                                aria-label="Toggle navigation">
-                            <i class="ri-menu-3-line"></i>
-                        </button>
-                        <div class="collapse navbar-collapse" id="navbarSupportedContent">
-                            <ul class="navbar-nav ml-auto navbar-list align-items-center">
-                                <li class="nav-item nav-icon dropdown caption-content">
-                                    <a href="#" class="search-toggle dropdown-toggle" id="dropdownMenuButton4"
-                                       data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                        <img src="@Url.Content("~/images/user.png")" class="img-fluid rounded" alt="user">
+                    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                        <ul class="navbar-nav ml-auto navbar-list align-items-center">
+                            <li class="nav-item nav-icon dropdown caption-content">
+                                <a href="#" class="search-toggle dropdown-toggle" id="dropdownMenuButton4"
+                                   data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    <img src="@Url.Content("~/images/user.png")" class="img-fluid rounded" alt="user">
+                                </a>
+                                <div class="iq-sub-dropdown dropdown-menu dropdown-menu-left" aria-labelledby="dropdownMenuButton4">
+                                    <div class="card shadow-none m-0">
+                                        <div class="card-body p-0 text-center">
+                                            <div class="p-3">
+                                                @if (autenticado)
+                                                {
+                                                    <h5 class="mb-1">@nombreUsuario</h5>
+                                                }
+                                                else
+                                                {
+                                                    <h5 class="mb-1">No estás autenticado</h5>
+                                                }
 
-                                    </a>
-                                    <div class="iq-sub-dropdown dropdown-menu" aria-labelledby="dropdownMenuButton" style="right:auto">
-                                        <div class="card shadow-none m-0">
-                                            <div class="card-body p-0 text-center">
-                                               
-                                                <div class="p-3">
-                                                    @if (User.Identity.IsAuthenticated)
+                                                <div class="d-flex align-items-center justify-content-center mt-3">
+                                                    @* Mostrar botón de registro solo si es Admin (rol 1) *@
+                                                    @if (idRol == 1)
                                                     {
-                                                        <h5 class="mb-1">@User.Identity.Name</h5>
+                                                        <a asp-controller="Register" asp-action="Register" class="btn border mr-2">Registrar</a>
                                                     }
-                                                    else
+
+                                                    @if (autenticado)
                                                     {
-                                                        <h5 class="mb-1">No estás autenticado</h5>
+                                                        <a asp-controller="Login" asp-action="Logout" class="btn border">Cerrar Sesión</a>
                                                     }
-                                                    <div class="d-flex align-items-center justify-content-center mt-3">
-                                                        @if (User.IsInRole("Admin"))
-                                                        {
-                                                            <a asp-controller="Register" asp-action="Register" class="btn border mr-2">Registrar</a>
-                                                        }
-                                                        <a asp-controller="Logout" asp-action="Logout" class="btn border">Cerrar Sesion</a>
-                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
-                                </li>
-                            </ul>
-                        </div>
+                                </div>
+                            </li>
+                        </ul>
                     </div>
                 </nav>
             </div>
@@ -243,8 +267,11 @@
     <!-- app JavaScript -->
     <script src="../js/app.js"></script>
 
-
     @await RenderSectionAsync("Scripts", required: false)
+
+    @section Scripts {
+        <partial name="_ValidationScriptsPartial" />
+    }
 </body>
 </html>
 

@@ -12,11 +12,34 @@ namespace BackEnd.Controllers
     [ApiController]
     public class UsuarioController : ControllerBase
     {
-        IUsuarioService usuarioService;
+        private readonly IUsuarioService usuarioService;
 
         public UsuarioController(IUsuarioService usuarioService)
         {
             this.usuarioService = usuarioService;
+        }
+
+        [HttpPost("login")]
+        public IActionResult Login([FromBody] LoginDTO login)
+        {
+            if (login == null || string.IsNullOrEmpty(login.NombreUsuario) || string.IsNullOrEmpty(login.Clave))
+            {
+                return BadRequest("Faltan datos de login.");
+            }
+
+            var usuario = usuarioService.ObtenerPorCredenciales(login.NombreUsuario, login.Clave);
+
+            if (usuario == null)
+            {
+                return Unauthorized("Credenciales inválidas.");
+            }
+
+            if (usuario.Estado == false)
+            {
+                return Unauthorized("Usuario inactivo.");
+            }
+
+            return Ok(usuario);
         }
 
 

@@ -19,6 +19,9 @@ public partial class SisComedorContext : DbContext
 
     public virtual DbSet<Escuela> Escuelas { get; set; }
 
+    public virtual DbSet<Estudiante> Estudiantes { get; set; }
+
+
     public virtual DbSet<EstadoPedido> EstadoPedidos { get; set; }
 
     public virtual DbSet<Pedido> Pedidos { get; set; }
@@ -29,11 +32,12 @@ public partial class SisComedorContext : DbContext
 
     public virtual DbSet<Proveedore> Proveedores { get; set; }
 
-    public virtual DbSet<Role> Roles { get; set; }
+    public virtual DbSet<Rol> Roles { get; set; }
 
     public virtual DbSet<TipoCedula> TipoCedulas { get; set; }
 
     public virtual DbSet<Usuario> Usuarios { get; set; }
+
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
@@ -79,7 +83,12 @@ public partial class SisComedorContext : DbContext
                 .HasMaxLength(120)
                 .IsUnicode(false)
                 .HasColumnName("NOMBRE_ESCUELA");
+
+            entity.HasMany(e => e.Usuarios)
+              .WithOne(u => u.Escuela)
+              .HasForeignKey(u => u.IdEscuela);
         });
+
 
         modelBuilder.Entity<EstadoPedido>(entity =>
         {
@@ -205,7 +214,7 @@ public partial class SisComedorContext : DbContext
                 .HasConstraintName("FK__PROVEEDOR__ID_ES__3F466844");
         });
 
-        modelBuilder.Entity<Role>(entity =>
+        modelBuilder.Entity<Rol>(entity =>
         {
             entity.HasKey(e => e.IdRol).HasName("PK__ROLES__203B0F6801E05D87");
 
@@ -225,62 +234,83 @@ public partial class SisComedorContext : DbContext
             entity.ToTable("TIPO_CEDULA");
 
             entity.Property(e => e.IdTipoCedula).HasColumnName("ID_TIPO_CEDULA");
-            entity.Property(e => e.TipoCedula1)
+            entity.Property(e => e.NombreTipoCedula)
                 .HasMaxLength(120)
                 .IsUnicode(false)
                 .HasColumnName("TIPO_CEDULA");
         });
 
+        // ✅ Configuración de Usuario
         modelBuilder.Entity<Usuario>(entity =>
         {
-            entity.HasKey(e => e.IdUsuario).HasName("PK__USUARIOS__91136B908550F84D");
-
             entity.ToTable("USUARIOS");
 
+            entity.HasKey(u => u.IdUsuario);
+
             entity.Property(e => e.IdUsuario).HasColumnName("ID_USUARIO");
-            entity.Property(e => e.Cedula)
-                .HasMaxLength(50)
-                .IsUnicode(false)
-                .HasColumnName("CEDULA");
-            entity.Property(e => e.Clave)
-                .HasMaxLength(15)
-                .IsUnicode(false)
-                .HasColumnName("CLAVE");
-            entity.Property(e => e.CorreoElectronico)
-                .HasMaxLength(120)
-                .IsUnicode(false)
-                .HasColumnName("CORREO_ELECTRONICO");
-            entity.Property(e => e.Direccion)
-                .HasMaxLength(500)
-                .IsUnicode(false)
-                .HasColumnName("DIRECCION");
+            entity.Property(e => e.NombreCompleto).HasColumnName("NOMBRE_COMPLETO");
+            entity.Property(e => e.IdTipoCedula).HasColumnName("ID_TIPO_CEDULA");
+            entity.Property(e => e.Cedula).HasColumnName("CEDULA");
+            entity.Property(e => e.Telefono).HasColumnName("TELEFONO");
+            entity.Property(e => e.Direccion).HasColumnName("DIRECCION");
+            entity.Property(e => e.CorreoElectronico).HasColumnName("CORREO_ELECTRONICO");
+            entity.Property(e => e.Clave).HasColumnName("CLAVE");
             entity.Property(e => e.Estado).HasColumnName("ESTADO");
             entity.Property(e => e.IdEscuela).HasColumnName("ID_ESCUELA");
             entity.Property(e => e.IdRol).HasColumnName("ID_ROL");
-            entity.Property(e => e.IdTipoCedula).HasColumnName("ID_TIPO_CEDULA");
-            entity.Property(e => e.NombreCompleto)
-                .HasMaxLength(120)
-                .IsUnicode(false)
-                .HasColumnName("NOMBRE_COMPLETO");
-            entity.Property(e => e.Telefono)
-                .HasMaxLength(120)
-                .IsUnicode(false)
-                .HasColumnName("TELEFONO");
+            entity.Property(e => e.NombreUsuario).HasColumnName("NOMBRE_USUARIO");
 
-            entity.HasOne(d => d.IdEscuelaNavigation).WithMany(p => p.Usuarios)
-                .HasForeignKey(d => d.IdEscuela)
-                .HasConstraintName("FK__USUARIOS__ID_ROL__49C3F6B7");
+            entity.HasOne(u => u.Escuela)
+                  .WithMany(e => e.Usuarios)
+                  .HasForeignKey(u => u.IdEscuela)
+                  .OnDelete(DeleteBehavior.Restrict);
 
-            entity.HasOne(d => d.IdRolNavigation).WithMany(p => p.Usuarios)
-                .HasForeignKey(d => d.IdRol)
-                .HasConstraintName("FK__USUARIOS__ID_ROL__4AB81AF0");
+            entity.HasOne(u => u.Rol)
+                  .WithMany(r => r.Usuarios)
+                  .HasForeignKey(u => u.IdRol)
+                  .OnDelete(DeleteBehavior.Restrict);
 
-            entity.HasOne(d => d.IdTipoCedulaNavigation).WithMany(p => p.Usuarios)
-                .HasForeignKey(d => d.IdTipoCedula)
-                .HasConstraintName("FK__USUARIOS__ID_TIP__4BAC3F29");
+            entity.HasOne(u => u.TipoCedula)
+                  .WithMany(t => t.Usuarios)
+                  .HasForeignKey(u => u.IdTipoCedula)
+                  .OnDelete(DeleteBehavior.Restrict);
+
         });
 
-        OnModelCreatingPartial(modelBuilder);
+        // ✅ Configuración de Estudiante (fuera del anterior bloque)
+        modelBuilder.Entity<Estudiante>(entity =>
+        {
+        entity.ToTable("ESTUDIANTES");
+
+        entity.HasKey(e => e.IdEstudiante);
+
+        entity.Property(e => e.IdEstudiante).HasColumnName("ID_ESTUDIANTE");
+        entity.Property(e => e.Nombre).HasMaxLength(100).HasColumnName("NOMBRE");
+        entity.Property(e => e.Cedula).HasMaxLength(20).IsUnicode(false).HasColumnName("CEDULA");
+        entity.Property(e => e.IdEscuela).HasColumnName("ID_ESCUELA");
+        entity.Property(e => e.TiquetesRestantes).HasColumnName("TIQUETES_RESTANTES");
+        entity.Property(e => e.IdUsuario).HasColumnName("ID_USUARIO");
+        entity.Property(e => e.RutaQR).HasColumnName("RUTA_QR").HasColumnType("varbinary(max)");
+        entity.Property(e => e.NombreUsuario).HasMaxLength(100).HasColumnName("NOMBRE_USUARIO");
+        entity.Property(e => e.Clave).HasMaxLength(255).HasColumnName("CLAVE");
+        entity.Property(e => e.FechaUltimoRebajo).HasColumnName("FECHA_ULTIMO_REBAJO").HasColumnType("date");
+
+            entity.HasOne(e => e.Escuela)
+         .WithMany() // ⚠️ No navegues desde Escuela a Estudiante si no necesitas
+         .HasForeignKey(e => e.IdEscuela)
+         .HasConstraintName("FK_ESTUDIANTES_ESCUELA");
+
+         entity.HasOne(e => e.Usuario)
+            .WithMany()
+            .HasForeignKey(e => e.IdUsuario)
+            .HasConstraintName("FK_ESTUDIANTES_USUARIO")
+            .OnDelete(DeleteBehavior.Cascade);
+
+
+        });
+
+
+            OnModelCreatingPartial(modelBuilder);
     }
 
     partial void OnModelCreatingPartial(ModelBuilder modelBuilder);

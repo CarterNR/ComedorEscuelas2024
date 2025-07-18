@@ -12,6 +12,7 @@ namespace DAL.Interfaces
         IRolDAL RolDAL { get; }
         IEstadoPedidoDAL EstadoPedidoDAL { get; }
         IEscuelaDAL EscuelaDAL { get; }
+        IEstudianteDAL EstudianteDAL { get; }
         IProveedorDAL ProveedorDAL { get; }
         IProductoDAL ProductoDAL { get; }
         IProductoDiaDAL ProductoDiaDAL { get; }

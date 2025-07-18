@@ -2,6 +2,7 @@
 using BackEnd.Services.Implementations;
 using BackEnd.Services.Interfaces;
 using Entities.Entities;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
@@ -45,12 +46,22 @@ namespace BackEnd.Controllers
             return Ok(producto);
         }
 
+
         [HttpDelete("{id}")]
+        [AllowAnonymous]
+
         public IActionResult Delete(int id)
         {
-            ProductoDTO producto = new ProductoDTO { IdProducto = id };
-            productoService.Eliminar(producto);
-            return Ok();
+            try
+            {
+                ProductoDTO producto = new ProductoDTO { IdProducto = id };
+                productoService.Eliminar(producto);
+                return NoContent(); // 204 Eliminado correctamente
+            }
+            catch (Exception ex)
+            {
+                return NotFound(); // o return StatusCode(500, ex.Message);
+            }
         }
 
 

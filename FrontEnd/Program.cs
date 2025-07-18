@@ -5,18 +5,22 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Configuration.AddJsonFile("appsettings.json");
 
 
-// Add services to the container.
 builder.Services.AddControllersWithViews();
-
 #region
-builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
-                .AddCookie(x => x.LoginPath = "/Login/LoginEscuelas");
 
 builder.Services.AddSession();
 
+builder.Services.AddSession(options =>
+{
+    options.IdleTimeout = TimeSpan.FromMinutes(5); // Puedes ajustar el tiempo de inactividad
+});
+builder.Services.AddDistributedMemoryCache();  // Necesario para usar sesiones
 
+
+builder.Services.AddHttpClient();
 builder.Services.AddHttpClient<IServiceRepository, ServiceRepository>();
 builder.Services.AddScoped<IServiceRepository, ServiceRepository>();
 builder.Services.AddScoped<IEscuelaHelper, EscuelaHelper>();
@@ -27,6 +31,9 @@ builder.Services.AddScoped<IProductoDiaHelper, ProductoDiaHelper>();
 builder.Services.AddScoped<IProveedorHelper, ProveedorHelper>();
 builder.Services.AddScoped<IUsuarioHelper, UsuarioHelper>();
 builder.Services.AddScoped<IEstadoPedidoHelper, EstadoPedidoHelper>();
+builder.Services.AddScoped<IRolHelper, RolHelper>();
+builder.Services.AddScoped<ITipoCedulaHelper, TipoCedulaHelper>();
+
 
 builder.Services.AddScoped<ISecurityHelper, SecurityHelper>();
 builder.Services.AddHttpContextAccessor();
@@ -38,10 +45,9 @@ builder.Services.AddHttpContextAccessor();
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
 {
-    app.UseExceptionHandler("/Home/Error");
+    app.UseExceptionHandler("");
 }
 app.UseStaticFiles();
 
@@ -49,11 +55,10 @@ app.UseRouting();
 
 app.UseSession();
 
-app.UseAuthorization();
-
 app.MapControllerRoute(
     name: "default",
- pattern: "{controller=Estudiante}/{action=Index}/{id?}");
-//pattern: "{controller=Home}/{action=Index}");
+
+pattern: "{controller=Login}/{action=Login}");
 
 app.Run();
+

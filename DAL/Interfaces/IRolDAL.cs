@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace DAL.Interfaces
 {
-    public interface IRolDAL : IDALGenerico<Role>
+    public interface IRolDAL : IDALGenerico<Rol>
     {
 
     }

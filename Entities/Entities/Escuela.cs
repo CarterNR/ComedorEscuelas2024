@@ -11,6 +11,8 @@ public partial class Escuela
 
     public bool? Estado { get; set; }
 
+    //public ICollection<Estudiante> Estudiantes { get; set; }
+
     public virtual ICollection<Bitacora> Bitacoras { get; set; } = new List<Bitacora>();
 
     public virtual ICollection<Pedido> Pedidos { get; set; } = new List<Pedido>();

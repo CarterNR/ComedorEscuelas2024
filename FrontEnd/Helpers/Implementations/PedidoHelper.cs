@@ -23,7 +23,7 @@ namespace FrontEnd.Helpers.Implementations
                 IdEstadoPedido = pedido.IdEstadoPedido,
                 Estado = pedido.Estado
 
-    };
+            };
         }
 
 
@@ -39,9 +39,15 @@ namespace FrontEnd.Helpers.Implementations
             {
 
                 var content = response.Content.ReadAsStringAsync().Result;
+                Console.WriteLine("Pedido creado exitosamente. Respuesta del servidor: " + content);
             }
-
-
+            else
+            {
+                var errorContent = response.Content.ReadAsStringAsync().Result;
+                Console.WriteLine("Error al crear el pedido. Código de estado: " + response.StatusCode);
+                Console.WriteLine("Detalles del error: " + errorContent);
+                throw new Exception("Error al crear el proveedor: " + errorContent);
+            }
             return pedido;
         }
 
@@ -108,7 +114,7 @@ namespace FrontEnd.Helpers.Implementations
                     FechaHoraIngreso = item.FechaHoraIngreso,
                     Cantidad = item.Cantidad,
                     IdUsuario = item.IdUsuario,
-                    NombreCompleto = usuario?.NombreCompleto ?? "Desconocido", // Nombre de la escuela
+                    NombreCompleto = usuario?.NombreCompleto ?? "Desconocido", 
                     IdEscuela = item.IdEscuela,
                     NombreEscuela = escuela?.NombreEscuela ?? "Desconocido", // Nombre de la escuela
                     IdEstadoPedido = item.IdEstadoPedido,

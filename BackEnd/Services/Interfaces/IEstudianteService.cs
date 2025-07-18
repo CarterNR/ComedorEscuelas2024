@@ -6,8 +6,12 @@ namespace BackEnd.Services.Interfaces
     {
         bool Agregar(EstudianteDTO estudiante);
         bool Editar(EstudianteDTO estudiante);
-        bool Eliminar(EstudianteDTO estudiante);
+        void Eliminar(int id);
         EstudianteDTO Obtener(int id);
         List<EstudianteDTO> Obtener();
+        EstudianteDTO ObtenerPorIdUsuario(int idUsuario);
+
+
+
     }
 }

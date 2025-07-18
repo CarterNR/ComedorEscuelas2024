@@ -19,7 +19,7 @@ namespace BackEnd.Services.Implementations
             return new TipoCedula
             {
                 IdTipoCedula = tipoCedula.IdTipoCedula,
-                TipoCedula1 = tipoCedula.TipoCedula1
+                NombreTipoCedula = tipoCedula.NombreTipoCedula
             };
         }
 
@@ -28,7 +28,7 @@ namespace BackEnd.Services.Implementations
             return new TipoCedulaDTO
             {
                 IdTipoCedula = tipoCedula.IdTipoCedula,
-                TipoCedula1 = tipoCedula.TipoCedula1
+                NombreTipoCedula = tipoCedula.NombreTipoCedula
             };
         }
         #endregion

@@ -4,6 +4,6 @@
     {
         public int IdTipoCedula { get; set; }
 
-        public string? TipoCedula1 { get; set; }
+        public string? NombreTipoCedula { get; set; }
     }
 }

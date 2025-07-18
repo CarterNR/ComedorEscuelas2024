@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace DAL.Implementations
 {
-    public class RolDALImpl : DALGenericoImpl<Role>, IRolDAL
+    public class RolDALImpl : DALGenericoImpl<Rol>, IRolDAL
     {
         SisComedorContext context;
 

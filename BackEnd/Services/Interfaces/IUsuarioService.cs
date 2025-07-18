@@ -9,5 +9,6 @@ namespace BackEnd.Services.Interfaces
         bool Eliminar(UsuarioDTO usuario);
         UsuarioDTO Obtener(int id);
         List<UsuarioDTO> Obtener();
+        UsuarioDTO ObtenerPorCredenciales(string nombreUsuario, string clave);
     }
 }

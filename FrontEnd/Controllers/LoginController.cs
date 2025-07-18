@@ -1,85 +1,90 @@
-﻿using FrontEnd.ApiModels;
+﻿using FrontEnd.Helpers.Implementations;
 using FrontEnd.Helpers.Interfaces;
 using FrontEnd.Models;
-using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using System.Security.Claims;
 
 namespace FrontEnd.Controllers
 {
     public class LoginController : Controller
     {
-        ISecurityHelper securityHelper;
+        private readonly IUsuarioHelper _usuarioHelper;
+        private readonly IEstudianteHelper _estudianteHelper;
 
-        public LoginController(ISecurityHelper securityHelper)
+        public LoginController(IUsuarioHelper usuarioHelper, IEstudianteHelper estudianteHelper)
         {
-            this.securityHelper = securityHelper;
+            _usuarioHelper = usuarioHelper;
+            _estudianteHelper = estudianteHelper;   
         }
 
-        public IActionResult Login(string ReturnUrl = "/")
+        // Mostrar el formulario de login
+        [HttpGet]
+        public IActionResult Login()
         {
-            UserViewModel user = new UserViewModel();
-            user.ReturnUrl = ReturnUrl;
-
-            return View(user);
+            return View();
         }
 
+        // Procesar el login
         [HttpPost]
-        public async Task<IActionResult> Login(UserViewModel user)
+        public IActionResult Login(LoginViewModel model)
         {
-            try
+            if (!ModelState.IsValid)
             {
-                if (ModelState.IsValid)
+                return View(model);
+            }
+
+            var usuario = _usuarioHelper.Autenticar(model.NombreUsuario, model.Clave);
+
+            if (usuario != null)
+            {
+                HttpContext.Session.SetInt32("IdUsuario", usuario.IdUsuario);
+                HttpContext.Session.SetString("NombreUsuario", usuario.NombreUsuario);
+                HttpContext.Session.SetInt32("IdRol", usuario.IdRol);
+
+                if (usuario.IdRol == 1)
+                    return RedirectToAction("Index", "Home");
+
+                if (usuario.IdRol == 3)
                 {
-                    var loging = securityHelper.Login(user);
+                    var estudiante = _estudianteHelper.GetEstudiantePorUsuario(usuario.IdUsuario);
 
-                    TokenAPI tokenAPI = loging.Token;
-                    var EsValido = false;
-
-                    if(tokenAPI != null)
+                    if (estudiante != null)
                     {
-                        HttpContext.Session.SetString("token", tokenAPI.Token);
-                        EsValido = true;
+                        if (DateTime.Now.DayOfWeek == DayOfWeek.Monday && estudiante.TiquetesRestantes != 5)
+                        {
+                            estudiante.TiquetesRestantes = 5;
+                            estudiante.FechaUltimoRebajo = DateTime.Now.Date;
+                            _estudianteHelper.Update(estudiante);
+                        }
+                        else
+                        {
+                            DateTime ultimaFecha = estudiante.FechaUltimoRebajo ?? DateTime.Now.Date;
+                            if (ultimaFecha.Date < DateTime.Now.Date && estudiante.TiquetesRestantes > 0)
+                            {
+                                estudiante.TiquetesRestantes -= 1;
+                                estudiante.FechaUltimoRebajo = DateTime.Now.Date;
+                                _estudianteHelper.Update(estudiante);
+                            }
+                        }
+
+                        return RedirectToAction("Index", "Estudiante", new { id = estudiante.IdEstudiante });
                     }
-
-                    if (!EsValido)
-                    {
-                        ViewBag.Message = "Invalid Credentials";
-                        return View(user);
-                    }
-
-
-                    var claims = new List<Claim>()
-                    {
-                                    new Claim(ClaimTypes.NameIdentifier, loging.Username as string),
-                                        new Claim(ClaimTypes.Name, loging.Username as string)
-                    };
-
-                    foreach(var item in loging.Roles)
-                    {
-                        claims.Add(
-                            new Claim(ClaimTypes.Role, item as string)
-                            );
-                    }
-
-                    var identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
-                    var principal = new ClaimsPrincipal(identity);
-
-                    await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal, new AuthenticationProperties()
-                    {
-                        IsPersistent = user.RememberLogin
-                    });
-
-                    return LocalRedirect(user.ReturnUrl);
+                    ViewBag.Error = "No se pudo cargar el estudiante.";
+                    return View(model);
                 }
 
-                return View(user);
+                return RedirectToAction("Index", "Home");
             }
-            catch (Exception)
-            {
-                throw;
-            }
+
+            ViewBag.Error = "Credenciales inválidas.";
+            return View(model);
+        }
+
+
+        public IActionResult Logout()
+        {
+            HttpContext.Session.Clear();
+            return RedirectToAction("Login");
         }
     }
 }

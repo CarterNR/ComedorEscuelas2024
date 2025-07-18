@@ -36,23 +36,27 @@ namespace FrontEnd.Controllers
 
        // [Authorize(Roles = "Admin")]
         // GET: Producto/Details/5
-        public IActionResult Details(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
 
+        public ActionResult Details(int id)
+        {
             var producto = _productoHelper.GetProducto(id);
+
             if (producto == null)
             {
                 return NotFound();
             }
 
+            var escuela = _escuelaHelper.GetEscuela(producto.IdEscuela);
+            producto.NombreEscuela = escuela?.NombreEscuela;
+
+            var proveedor = _proveedorHelper.GetProveedor(producto.IdProveedor);
+            producto.NombreProveedor = proveedor?.NombreProveedor;
+
             return View(producto);
         }
 
-      //  [Authorize(Roles = "Admin")]
+
+        //  [Authorize(Roles = "Admin")]
         // GET: Producto/Create
         public IActionResult Create()
         {
@@ -122,34 +126,37 @@ namespace FrontEnd.Controllers
 
      //   [Authorize(Roles = "Admin")]
         // GET: Producto/Edit/5
-        public IActionResult Edit(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
 
+        public ActionResult Edit(int id)
+        {
             var producto = _productoHelper.GetProducto(id);
+
             if (producto == null)
             {
                 return NotFound();
             }
 
-            producto.ListaProveedores = _proveedorHelper.GetProveedores()
+            var proveedores = _proveedorHelper.GetProveedores();
+
+            producto.ListaProveedores = proveedores
                 .Select(p => new SelectListItem
                 {
                     Value = p.IdProveedor.ToString(),
                     Text = p.NombreProveedor
-                });
-            producto.ListaEscuelas = _escuelaHelper.GetEscuelas()
+                }).ToList();
+
+            var escuelas = _escuelaHelper.GetEscuelas();
+
+            producto.ListaEscuelas = escuelas
                 .Select(e => new SelectListItem
                 {
                     Value = e.IdEscuela.ToString(),
                     Text = e.NombreEscuela
-                });
+                }).ToList();
 
             return View(producto);
         }
+
 
         // POST: Producto/Edit/5
         [HttpPost]
@@ -201,28 +208,29 @@ namespace FrontEnd.Controllers
             return View(producto);
         }
 
-
-   //     [Authorize(Roles = "Admin")]
-        // GET: Producto/Delete/5
-        public IActionResult Delete(int? id)
+        public ActionResult Delete(int id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
             var producto = _productoHelper.GetProducto(id);
+
             if (producto == null)
             {
                 return NotFound();
             }
+
+            var proveedor = _proveedorHelper.GetProveedor(producto.IdProveedor);
+
+            producto.NombreProveedor = proveedor?.NombreProveedor;
+
+            var escuela = _escuelaHelper.GetEscuela(producto.IdEscuela);
+
+            producto.NombreEscuela = escuela?.NombreEscuela;
 
             return View(producto);
         }
 
         // POST: Producto/Delete/5
         [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
+       // [ValidateAntiForgeryToken]
         public IActionResult DeleteConfirmed(int id)
         {
             try
@@ -261,5 +269,8 @@ namespace FrontEnd.Controllers
 
             return File(producto.Imagen, mimeType);
         }
+
+  
+
     }
 }

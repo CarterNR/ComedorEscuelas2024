@@ -12,83 +12,95 @@ using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
+// Configuración de Kestrel
+builder.WebHost.ConfigureKestrel(options =>
+{
+    // Opción para tomar la URL desde el appsettings.json (opcional)
+    var kestrelSection = builder.Configuration.GetSection("Kestrel:Endpoints:Http:Url");
+    var url = kestrelSection.Value;
+    if (!string.IsNullOrEmpty(url))
+    {
+        options.ListenAnyIP(new Uri(url).Port);  // Usando la URL del appsettings (si está configurada)
+    }
+    else
+    {
+        // Puerto fijo si no se encuentra en el archivo de configuración
+        options.ListenAnyIP(5273);  // Usar puerto 5273
+    }
+});
 
+
+// Agregar servicios a la colección
 builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 #region BD
+// Configuración de la base de datos con SQL Server
 builder.Services.AddDbContext<SisComedorContext>(options =>
-                    options.UseSqlServer(
-                        builder
-                        .Configuration
-                        .GetConnectionString("DefaulConnection")
-                        ));
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"))
+);
 
 builder.Services.AddDbContext<AuthDBContext>(options =>
-                    options.UseSqlServer(
-                        builder
-                        .Configuration
-                        .GetConnectionString("DefaulConnection")
-                        ));
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"))
+);
+
 #endregion
 
-#region Identity
-builder.Services.AddIdentityCore<IdentityUser>()
-    .AddRoles<IdentityRole>()
-    .AddTokenProvider<DataProtectorTokenProvider<IdentityUser>>("fide")
-    .AddEntityFrameworkStores<AuthDBContext>()
-    .AddDefaultTokenProviders();
-
-builder.Services.Configure<IdentityOptions>(options =>
+#region CORS
+// Configuración de CORS para permitir cualquier origen
+builder.Services.AddCors(options =>
 {
-    options.Password.RequiredLength = 5;
-    options.Password.RequireNonAlphanumeric = false;
-    options.Password.RequireDigit = false;
-    options.Password.RequireLowercase = false;
-    options.Password.RequireUppercase = false;
+    options.AddPolicy("AllowAll", builder =>
+        builder.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
 });
 #endregion
 
-#region JWT
+#region Identity (comentado temporalmente si no lo usas)
+//// Configuración de Identity
+//builder.Services.AddIdentityCore<IdentityUser>()
+//   .AddRoles<IdentityRole>()
+//   .AddTokenProvider<DataProtectorTokenProvider<IdentityUser>>("fide")
+//   .AddEntityFrameworkStores<AuthDBContext>()
+//   .AddDefaultTokenProviders();
 
-builder.Services.AddAuthentication(options =>
-{
-
-    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-    options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
-
-})
-    .AddJwtBearer(options =>
-    {
-        options.SaveToken = true;
-        options.RequireHttpsMetadata = false;
-        options.TokenValidationParameters = new TokenValidationParameters()
-        {
-            ValidateIssuer = false,
-            ValidateAudience = false,
-            ValidAudience = builder.Configuration["JWT:ValidAudience"],
-            ValidIssuer = builder.Configuration["JWT:ValidIssuer"],
-            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["JWT:Key"]))
-        };
-    });
+//builder.Services.Configure<IdentityOptions>(options =>
+//{
+//   options.Password.RequiredLength = 5;
+//   options.Password.RequireNonAlphanumeric = false;
+//   options.Password.RequireDigit = false;
+//   options.Password.RequireLowercase = false;
+//   options.Password.RequireUppercase = false;
+//});
 
 #endregion
 
-#region Serilog
-builder.Logging.ClearProviders();
-builder.Logging.AddConsole();
-builder.Host.UseSerilog((ext, lc) => lc
-                            .WriteTo
-                            .File("logs/logsbackend.txt", rollingInterval: RollingInterval.Day)
-                            .MinimumLevel.Information()
-);
+#region JWT (comentado si no lo usas)
+//// Configuración de JWT
+//builder.Services.AddAuthentication(options =>
+//{
+//    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+//    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+//    options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+//})
+//  .AddJwtBearer(options =>
+//  {
+//    options.SaveToken = true;
+//    options.RequireHttpsMetadata = false;
+//    options.TokenValidationParameters = new TokenValidationParameters()
+//    {
+//        ValidateIssuer = false,
+//        ValidateAudience = false,
+//        ValidAudience = builder.Configuration["JWT:ValidAudience"],
+//        ValidIssuer = builder.Configuration["JWT:ValidIssuer"],
+//        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["JWT:Key"]))
+//    };
+//});
+
 #endregion
 
-#region 
+#region Servicios
+// Agregar los servicios que usa el backend
 builder.Services.AddDbContext<SisComedorContext>();
 builder.Services.AddScoped<IUnidadDeTrabajo, UnidadDeTrabajo>();
 
@@ -125,25 +137,23 @@ builder.Services.AddScoped<IUsuarioService, UsuarioService>();
 builder.Services.AddScoped<IPedidoDAL, PedidoDALImpl>();
 builder.Services.AddScoped<IPedidoService, PedidoService>();
 
-builder.Services.AddScoped<ITokenService, TokenService>();
-
+builder.Services.AddScoped<EstudianteService>();
 #endregion
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
+// Aplicar middleware de CORS
+app.UseCors("AllowAll"); // Habilita CORS para todas las rutas
+
+// Configuración de Swagger (solo en desarrollo)
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
 }
 
-app.UseMiddleware<ApiKeyManager>();
-
-app.UseAuthentication();
-
-app.UseAuthorization();
-
+// Configuración de rutas y controladores
 app.MapControllers();
 
+// Iniciar la aplicación
 app.Run();

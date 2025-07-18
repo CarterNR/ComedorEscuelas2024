@@ -8,9 +8,12 @@ namespace BackEnd.Services.Implementations
     public class EscuelaService : IEscuelaService
     {
         IUnidadDeTrabajo Unidad;
-        public EscuelaService(IUnidadDeTrabajo unidadDeTrabajo)
+        SisComedorContext context;
+
+        public EscuelaService(IUnidadDeTrabajo unidadDeTrabajo, SisComedorContext context)
         {
             this.Unidad = unidadDeTrabajo;
+            this.context = context;
         }
 
         #region

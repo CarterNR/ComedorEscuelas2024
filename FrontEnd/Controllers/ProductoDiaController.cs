@@ -43,7 +43,7 @@ namespace FrontEnd.Controllers
             return View(listaProductoDia);
         }
 
-        [Authorize(Roles = "Admin, Producto")]
+      //  [Authorize(Roles = "Admin, Producto")]
         // GET: ProductoDiaController/Details/5
         public ActionResult Details(int id)
         {

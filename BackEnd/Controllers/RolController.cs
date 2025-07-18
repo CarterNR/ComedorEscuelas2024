@@ -20,10 +20,6 @@ namespace BackEnd.Controllers
         }
 
 
-
-
-
-
         // GET: api/<RolController>
         [HttpGet]
         public IEnumerable<RolDTO> Get()

@@ -25,11 +25,6 @@ namespace FrontEnd.Models
 
 
         public int? IdEscuela { get; set; }
-
-
-
-
-        // Campo adicional para el nombre de la escuela
         
 
         public IEnumerable<SelectListItem> ListaEscuelas { get; set; } = new List<SelectListItem>();

@@ -1,77 +1,135 @@
 ﻿using BackEnd.DTO;
 using BackEnd.Services.Interfaces;
+using DAL.Implementations;
 using DAL.Interfaces;
 using Entities.Entities;
+using QRCoder;
 
 namespace BackEnd.Services.Implementations
 {
     public class EstudianteService : IEstudianteService
     {
-        IUnidadDeTrabajo Unidad;
-        public EstudianteService(IUnidadDeTrabajo unidadDeTrabajo)
+        private readonly IUnidadDeTrabajo _unidad;
+        private readonly SisComedorContext _context;
+
+        public EstudianteService(IUnidadDeTrabajo unidadDeTrabajo, SisComedorContext context)
         {
-            this.Unidad = unidadDeTrabajo;
+            _unidad = unidadDeTrabajo;
+            _context = context;
         }
 
-        #region
-        Escuela Convertir(EscuelaDTO escuela)
+        #region Convertidores
+
+        private Estudiante Convertir(EstudianteDTO estudiante)
         {
-            return new Escuela
+            return new Estudiante
             {
-                IdEscuela = escuela.IdEscuela,
-                NombreEscuela = escuela.NombreEscuela,
-                Estado = escuela.Estado
+                IdEstudiante = estudiante.IdEstudiante,
+                Nombre = estudiante.Nombre,
+                Cedula = estudiante.Cedula,
+                IdEscuela = estudiante.IdEscuela,
+                TiquetesRestantes = estudiante.TiquetesRestantes,
+                IdUsuario = estudiante.IdUsuario,
+                RutaQR = estudiante.RutaQR,
+                NombreUsuario = estudiante.NombreUsuario,
+                Clave = estudiante.Clave,
+                FechaUltimoRebajo = estudiante.FechaUltimoRebajo
             };
         }
 
-        EscuelaDTO Convertir(Escuela escuela)
+        private EstudianteDTO Convertir(Estudiante estudiante)
         {
-            return new EscuelaDTO
+            return new EstudianteDTO
             {
-                IdEscuela = escuela.IdEscuela,
-                NombreEscuela = escuela.NombreEscuela,
-                Estado = escuela.Estado
+                IdEstudiante = estudiante.IdEstudiante,
+                Nombre = estudiante.Nombre,
+                Cedula = estudiante.Cedula,
+                IdEscuela = estudiante.IdEscuela,
+                TiquetesRestantes = estudiante.TiquetesRestantes,
+                IdUsuario = estudiante.IdUsuario,
+                RutaQR = estudiante.RutaQR,
+                NombreUsuario = estudiante.NombreUsuario,
+                Clave = estudiante.Clave,
+                FechaUltimoRebajo = estudiante.FechaUltimoRebajo
             };
         }
+
         #endregion
-
 
         public bool Agregar(EstudianteDTO estudiante)
         {
-            Estudiante entity = Convertir(estudiante);
-            Unidad.EstudianteDAL.Add(entity);
-            return Unidad.Complete();
+            var entity = Convertir(estudiante);
+            _unidad.EstudianteDAL.Add(entity);
+            return _unidad.Complete();
         }
 
         public bool Editar(EstudianteDTO estudiante)
         {
             var entity = Convertir(estudiante);
-            Unidad.EstudianteDAL.Update(entity);
-            return Unidad.Complete();
+            _unidad.EstudianteDAL.Update(entity);
+            return _unidad.Complete();
         }
 
-        public bool Eliminar(EstudianteDTO estudiante)
+        public void Eliminar(int id)
         {
-            var entity = Convertir(estudiante);
-            Unidad.EstudianteDAL.Remove(entity);
-            return Unidad.Complete();
+            var estudiante = _unidad.EstudianteDAL.Get(id);
+            if (estudiante != null)
+            {
+                _unidad.EstudianteDAL.Remove(estudiante);
+                _unidad.Complete();
+            }
         }
 
         public EstudianteDTO Obtener(int id)
         {
-            return Convertir(Unidad.EstudianteDAL.Get(id));
+            var entidad = _unidad.EstudianteDAL.Get(id);
+            return entidad != null ? Convertir(entidad) : null;
         }
 
         public List<EstudianteDTO> Obtener()
         {
-            List<EstudianteDTO> list = new List<EstudianteDTO>();
-            var estudiantes = Unidad.EstudianteDAL.GetAll().ToList();
+            return _unidad.EstudianteDAL.GetAll()
+                .Select(e => Convertir(e))
+                .ToList();
+        }
 
-            foreach (var item in estudiantes)
+
+        public EstudianteDTO ObtenerPorIdUsuario(int idUsuario)
+        {
+            var estudiante = _context.Estudiantes.FirstOrDefault(e => e.IdUsuario == idUsuario);
+
+            if (estudiante == null) return null;
+
+            return new EstudianteDTO
             {
-                list.Add(Convertir(item));
-            }
-            return list;
+                IdEstudiante = estudiante.IdEstudiante,
+                Nombre = estudiante.Nombre,
+                Cedula = estudiante.Cedula,
+                IdEscuela = estudiante.IdEscuela,
+                IdUsuario = estudiante.IdUsuario,
+                TiquetesRestantes = estudiante.TiquetesRestantes,
+                Clave = estudiante.Clave,
+                NombreUsuario = estudiante.NombreUsuario,
+                RutaQR = estudiante.RutaQR,
+                FechaUltimoRebajo = estudiante.FechaUltimoRebajo
+            };
+        }
+
+
+
+
+        private Estudiante ConvertirAEntidad(EstudianteDTO estudianteDTO)
+        {
+            // Aquí implementas la lógica para convertir el DTO a la entidad Estudiante
+            return new Estudiante
+            {
+                // Mapeo de las propiedades de EstudianteDTO a Estudiante
+                IdEstudiante = estudianteDTO.IdEstudiante,
+                Cedula = estudianteDTO.Cedula,
+                Nombre = estudianteDTO.Nombre,
+                RutaQR = estudianteDTO.RutaQR,
+                FechaUltimoRebajo = estudianteDTO.FechaUltimoRebajo
+            };
         }
 
     }

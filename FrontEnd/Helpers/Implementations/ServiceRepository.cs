@@ -39,6 +39,11 @@ namespace FrontEnd.Helpers.Implementations
             return Client.DeleteAsync(url).Result;
         }
 
+        public async Task<HttpResponseMessage> GetResponseAsync(string url)
+        {
+            return await Client.GetAsync(url);
+        }
+
 
 
     }

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace Entities.Entities;
 
-public partial class Role
+public partial class Rol
 {
     public int IdRol { get; set; }
 

@@ -1,0 +1,144 @@
+﻿@model FrontEnd.Models.UsuarioViewModel
+
+@{
+    ViewData["Title"] = "Details";
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>@ViewData["Title"]</title>
+
+    <link rel="shortcut icon" href="/images/favicon.ico" />
+    <link rel="stylesheet" href="/css/backend-plugin.min.css">
+    <link rel="stylesheet" href="/css/backend.css?v=1.0.0">
+    <link rel="stylesheet" href="/vendor/fortawesome/fontawesome-free/css/all.min.css">
+    <link rel="stylesheet" href="/vendor/line-awesome/dist/line-awesome/css/line-awesome.min.css">
+    <link rel="stylesheet" href="/vendor/remixicon/fonts/remixicon.css">
+</head>
+
+<body>
+
+    <div class="content-page">
+        <div class="container-fluid add-form-list">
+            <div class="row">
+                <div class="col-sm-12">
+                    <div class="card">
+                        <div class="card-header d-flex justify-content-between">
+                            <div class="header-title d-flex align-items-center">
+                                <a asp-action="Index" class="btn btn-info mr-2">
+                                    <i class="fas fa-arrow-left"></i>
+                                </a>
+                                <h4 class="card-title mb-0">Detalles del usuario</h4>
+                            </div>
+                        </div>
+
+                        <div class="card-body">
+                            <dl class="row">
+
+                                <dt class="col-sm-2">
+                                    <label>ID Usuario</label>
+                                </dt>
+                                <dd class="col-sm-10">
+                                    @Html.DisplayFor(model => model.IdUsuario)
+                                </dd>
+
+                                <dt class="col-sm-2">
+                                    <label>Nombre de Usuario</label>
+                                </dt>
+                                <dd class="col-sm-10">
+                                    @Html.DisplayFor(model => model.NombreUsuario)
+                                </dd>
+
+                                <dt class="col-sm-2">
+                                    <label>Nombre Completo</label>
+                                </dt>
+                                <dd class="col-sm-10">
+                                    @Html.DisplayFor(model => model.NombreCompleto)
+                                </dd>
+
+                                <dt class="col-sm-2">
+                                    <label>Tipo de Cédula</label>
+                                </dt>
+                                <dd class="col-sm-10">
+                                    @Html.DisplayFor(model => model.NombreTipoCedula)
+                                </dd>
+
+                                <dt class="col-sm-2">
+                                    <label>Número de Cédula</label>
+                                </dt>
+                                <dd class="col-sm-10">
+                                    @Html.DisplayFor(model => model.Cedula)
+                                </dd>
+
+                                <dt class="col-sm-2">
+                                    <label>Clave</label>
+                                </dt>
+                                <dd class="col-sm-10">
+                                    @Html.DisplayFor(model => model.Clave)
+                                </dd>
+
+                                <dt class="col-sm-2">
+                                    <label>Teléfono</label>
+                                </dt>
+                                <dd class="col-sm-10">
+                                    @Html.DisplayFor(model => model.Telefono)
+                                </dd>
+
+                                <dt class="col-sm-2">
+                                    <label>Dirección</label>
+                                </dt>
+                                <dd class="col-sm-10">
+                                    @Html.DisplayFor(model => model.Direccion)
+                                </dd>
+
+                                <dt class="col-sm-2">
+                                    <label>Correo Electrónico</label>
+                                </dt>
+                                <dd class="col-sm-10">
+                                    @Html.DisplayFor(model => model.CorreoElectronico)
+                                </dd>
+
+                                <dt class="col-sm-2">
+                                    <label>Estado</label>
+                                </dt>
+                                <dd class="col-sm-10">
+                                    <div class="badge @(Model.Estado ?? false ? "badge-success" : "badge-danger")">
+                                        @(Model.Estado.HasValue ? (Model.Estado.Value ? "Activo" : "Inactivo") : "Desconocido")
+                                    </div>
+                                </dd>
+
+                                <dt class="col-sm-2">
+                                    <label>Escuela</label>
+                                </dt>
+                                <dd class="col-sm-10">
+                                    @Html.DisplayFor(model => model.NombreEscuela)
+                                </dd>
+
+                                <dt class="col-sm-2">
+                                    <label>Rol</label>
+                                </dt>
+                                <dd class="col-sm-10">
+                                    @Html.DisplayFor(model => model.NombreRol)
+                                </dd>
+
+                            </dl>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="/lib/jquery/dist/jquery.min.js"></script>
+    <script src="/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="/js/backend-bundle.min.js"></script>
+    <script src="/js/app.js"></script>
+</body>
+</html>

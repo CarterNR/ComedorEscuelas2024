@@ -10,5 +10,10 @@ namespace FrontEnd.Helpers.Interfaces
         EstudianteViewModel Add(EstudianteViewModel estudiante);
         EstudianteViewModel Update(EstudianteViewModel estudiante);
         void Delete(int id);
+
+        EstudianteViewModel GetEstudiantePorUsuario(int idUsuario);
+        EstudianteViewModel GetEstudiantePorCedula(string cedula);
+
+
     }
 }

@@ -14,16 +14,16 @@ namespace BackEnd.Services.Implementations
         }
 
         #region
-        Role Convertir(RolDTO rol)
+        Rol Convertir(RolDTO rol)
         {
-            return new Role
+            return new Rol
             {
                 IdRol = rol.IdRol,
                 NombreRol = rol.NombreRol
             };
         }
 
-        RolDTO Convertir(Role rol)
+        RolDTO Convertir(Rol rol)
         {
             return new RolDTO
             {
@@ -38,7 +38,7 @@ namespace BackEnd.Services.Implementations
 
         public bool Agregar(RolDTO rol)
         {
-            Role entity = Convertir(rol);
+            Rol entity = Convertir(rol);
             Unidad.RolDAL.Add(entity);
             return Unidad.Complete();
         }

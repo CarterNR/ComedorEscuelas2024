@@ -14,6 +14,7 @@ namespace DAL.Implementations
         public IRolDAL RolDAL { get; set; }
         public IEstadoPedidoDAL EstadoPedidoDAL { get; set; }
         public IEscuelaDAL EscuelaDAL {  get; set; }
+        public IEstudianteDAL EstudianteDAL {  get; set; }
         public IProveedorDAL ProveedorDAL { get; set; }
         public IProductoDAL ProductoDAL { get; set; }
         public IProductoDiaDAL ProductoDiaDAL { get; set; }
@@ -30,7 +31,8 @@ namespace DAL.Implementations
         public UnidadDeTrabajo(SisComedorContext sisComedorContext,
                          ITipoCedulaDAL tipoCedulaDAL, 
                          IRolDAL rolDAL, IEstadoPedidoDAL estadoPedidosDAL, 
-                         IEscuelaDAL escuelaDAL, IProveedorDAL proveedorDAL,
+                         IEscuelaDAL escuelaDAL, IEstudianteDAL estudianteDAL,
+                         IProveedorDAL proveedorDAL,
                          IProductoDAL productoDAL, IProductoDiaDAL productoDiaDAL,
                          IUsuarioDAL usuarioDAL, IBitacoraDAL bitacoraDAL,
                          IPedidoDAL pedidoDAL
@@ -41,6 +43,7 @@ namespace DAL.Implementations
             this.TipoCedulaDAL = tipoCedulaDAL;
             this.RolDAL = rolDAL;
             this.EscuelaDAL = escuelaDAL;
+            this.EstudianteDAL = estudianteDAL;
             this.EstadoPedidoDAL = estadoPedidosDAL;
             this.ProveedorDAL = proveedorDAL;
             this.ProductoDAL = productoDAL;

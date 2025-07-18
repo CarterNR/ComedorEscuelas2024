@@ -10,5 +10,10 @@ namespace FrontEnd.Helpers.Interfaces
         UsuarioViewModel Add(UsuarioViewModel usuario);
         UsuarioViewModel Update(UsuarioViewModel usuario);
         void Delete(int id);
+
+        UsuarioViewModel Autenticar(string nombreUsuario, string clave);
+
+
+
     }
 }

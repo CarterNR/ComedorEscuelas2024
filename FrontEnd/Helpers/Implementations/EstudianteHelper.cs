@@ -10,24 +10,31 @@ namespace FrontEnd.Helpers.Implementations
     {
         IServiceRepository _ServiceRepository;
 
-        Estudiante Convertir(EstudianteViewModel estudiante)
+        private readonly string _baseUrl;
+
+        public EstudianteHelper(IConfiguration config, IServiceRepository serviceRepository)
+        {
+            _baseUrl = config["BaseUrl"];
+            _ServiceRepository = serviceRepository;
+        }
+
+        private Estudiante Convertir(EstudianteViewModel estudiante)
         {
             return new Estudiante
             {
                 IdEstudiante = estudiante.IdEstudiante,
                 Nombre = estudiante.Nombre,
                 Cedula = estudiante.Cedula,
-                Contrasena = estudiante.Contrasena,
-                TiquetesRestantes = estudiante.TiquetesRestantes
+                IdEscuela = estudiante.IdEscuela,
+                TiquetesRestantes = estudiante.TiquetesRestantes,
+                IdUsuario = estudiante.IdUsuario,
+                RutaQR = estudiante.RutaQR,
+                NombreUsuario = estudiante.NombreUsuario,
+                Clave = estudiante.Clave,
+                FechaUltimoRebajo = estudiante.FechaUltimoRebajo
 
 
-    };
-        }
-
-
-        public EstudianteHelper(IServiceRepository serviceRepository)
-        {
-            _ServiceRepository = serviceRepository;
+            };
         }
 
         public EstudianteViewModel Add(EstudianteViewModel estudiante)
@@ -63,20 +70,46 @@ namespace FrontEnd.Helpers.Implementations
             List<EstudianteViewModel> resultado = new List<EstudianteViewModel>();
             foreach (var item in estudiantes)
             {
+
+                Escuela escuela = null;
+
+                try
+                {
+                    HttpResponseMessage escuelaResponse = _ServiceRepository.GetResponse("api/Escuela/" + item.IdEscuela);
+                    if (escuelaResponse.IsSuccessStatusCode)
+                    {
+                        var escuelaContent = escuelaResponse.Content.ReadAsStringAsync().Result;
+                        escuela = JsonConvert.DeserializeObject<Escuela>(escuelaContent);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Error al obtener datos de la escuela: {ex.Message}");
+                }
+
                 resultado.Add(
                             new EstudianteViewModel
                             {
+
                                 IdEstudiante = item.IdEstudiante,
                                 Nombre = item.Nombre,
                                 Cedula = item.Cedula,
-                                Contrasena = item.Contrasena,
-                                TiquetesRestantes = item.TiquetesRestantes
+                                IdEscuela = item.IdEscuela,
+                                TiquetesRestantes = item.TiquetesRestantes,
+                                IdUsuario = item.IdUsuario,
+                                RutaQR = item.RutaQR,
+                                NombreUsuario = item.NombreUsuario,
+                                Clave = item.Clave,
+                                FechaUltimoRebajo = item.FechaUltimoRebajo,
+                                NombreEscuela = escuela?.NombreEscuela ?? "Desconocido"
+
                             }
                     );
             }
             return resultado;
 
         }
+
 
         public EstudianteViewModel GetEstudiante(int? id)
         {
@@ -91,15 +124,16 @@ namespace FrontEnd.Helpers.Implementations
             EstudianteViewModel resultado =
                             new EstudianteViewModel
                             {
-
                                 IdEstudiante = estudiante.IdEstudiante,
                                 Nombre = estudiante.Nombre,
                                 Cedula = estudiante.Cedula,
-                                Contrasena = estudiante.Contrasena,
-                                TiquetesRestantes = estudiante.TiquetesRestantes
-
-
-
+                                IdEscuela = estudiante.IdEscuela,
+                                TiquetesRestantes = estudiante.TiquetesRestantes,
+                                IdUsuario = estudiante.IdUsuario,
+                                RutaQR = estudiante.RutaQR,
+                                NombreUsuario = estudiante.NombreUsuario,
+                                Clave = estudiante.Clave,
+                                FechaUltimoRebajo = estudiante.FechaUltimoRebajo
                             };
 
 
@@ -116,5 +150,63 @@ namespace FrontEnd.Helpers.Implementations
             }
             return estudiante;
         }
+
+
+
+        public EstudianteViewModel GetEstudiantePorUsuario(int idUsuario)
+        {
+            EstudianteViewModel estudiante = null;
+
+            using (var client = new HttpClient())
+            {
+                client.BaseAddress = new Uri(_baseUrl); // Usa lo que esté en appsettings.json
+                var response = client.GetAsync($"api/Estudiante/PorUsuario/{idUsuario}").Result;
+
+                if (response.IsSuccessStatusCode)
+                {
+                    var content = response.Content.ReadAsStringAsync().Result;
+                    estudiante = JsonConvert.DeserializeObject<EstudianteViewModel>(content);
+                }
+            }
+
+            return estudiante;
+        }
+
+        public EstudianteViewModel DescontarTiquete(int idEstudiante)
+        {
+            HttpResponseMessage response = _ServiceRepository.PostResponse($"api/Estudiante/DescontarTiquete/{idEstudiante}", null);
+
+            if (response.IsSuccessStatusCode)
+            {
+                var content = response.Content.ReadAsStringAsync().Result;
+                return JsonConvert.DeserializeObject<EstudianteViewModel>(content);
+            }
+            else
+            {
+                return null;
+            }
+        }
+
+        public EstudianteViewModel GetEstudiantePorCedula(string cedula)
+        {
+            EstudianteViewModel estudiante = null;
+
+            using (var client = new HttpClient())
+            {
+                client.BaseAddress = new Uri(_baseUrl);
+
+                var response = client.GetAsync($"api/Estudiante/VerPorCedula/{cedula}").Result;
+
+                if (response.IsSuccessStatusCode)
+                {
+                    estudiante = response.Content.ReadFromJsonAsync<EstudianteViewModel>().Result;
+                }
+            }
+
+            return estudiante;
+        }
+
+
+
     }
 }

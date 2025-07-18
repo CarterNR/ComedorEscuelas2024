@@ -1,25 +1,80 @@
 ﻿using BackEnd.DTO;
-using BackEnd.Services.Implementations;
 using BackEnd.Services.Interfaces;
 using Entities.Entities;
 using Microsoft.AspNetCore.Mvc;
 
-// For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-
-namespace BackEnd.Controllers
+[Route("api/[controller]")]
+[ApiController]
+public class EstudianteController : ControllerBase
 {
-    [Route("api/[controller]")]
-    [ApiController]
-    public class EstudianteController : ControllerBase
-    {
+    private readonly IEstudianteService estudianteService;
+    private readonly SisComedorContext context; // Asegúrate de tener esta referencia al contexto
 
-        IEstudianteService estudianteService;
-    
-    public EstudianteController(IEstudianteService estudianteService)
+    public EstudianteController(IEstudianteService estudianteService, SisComedorContext context)
     {
         this.estudianteService = estudianteService;
+        this.context = context;
     }
 
+    [HttpGet("Escanear/{cedula}")]
+    public IActionResult Escanear(string cedula)
+    {
+        var estudiante = context.Estudiantes.FirstOrDefault(e => e.Cedula == cedula);
+
+        if (estudiante == null)
+        {
+            return NotFound(new { mensaje = "Estudiante no encontrado." });
+        }
+
+        if (estudiante.TiquetesRestantes > 0)
+        {
+            estudiante.TiquetesRestantes -= 1;
+            estudiante.FechaUltimoRebajo = DateTime.Now.Date;
+            context.SaveChanges();
+
+            return Ok(new
+            {
+                mensaje = $"Tiquete descontado. Tiquetes restantes: {estudiante.TiquetesRestantes}"
+            });
+        }
+        else
+        {
+            return Ok(new { mensaje = "El estudiante no tiene tiquetes disponibles." });
+        }
+    }
+
+    // 3️⃣ Backend Controller para descontar tiquete por QR
+    [HttpPost("DescontarTiquete/{idEstudiante}")]
+    public IActionResult DescontarTiquete(int idEstudiante)
+    {
+        var estudiante = context.Estudiantes.FirstOrDefault(e => e.IdEstudiante == idEstudiante);
+
+        if (estudiante == null)
+            return NotFound("Estudiante no encontrado.");
+
+        if (estudiante.TiquetesRestantes > 0)
+        {
+            estudiante.TiquetesRestantes -= 1;
+            estudiante.FechaUltimoRebajo = DateTime.Now.Date;
+            context.SaveChanges();
+            return Ok(estudiante);
+        }
+        else
+        {
+            return BadRequest("El estudiante no tiene tiquetes restantes.");
+        }
+    }
+
+    [HttpGet("PorCedula/{cedula}")]
+    public IActionResult GetEstudiantePorCedula(string cedula)
+    {
+        var estudiante = context.Estudiantes.FirstOrDefault(e => e.Cedula == cedula);
+
+        if (estudiante == null)
+            return NotFound();
+
+        return Ok(estudiante);
+    }
 
 
     // GET: api/<EstudianteController>
@@ -54,14 +109,38 @@ namespace BackEnd.Controllers
 
     // DELETE api/<EstudianteController>/5
     [HttpDelete("{id}")]
-    public void Delete(int id)
+    public IActionResult Delete(int id)
+    {
+        using var context = new SisComedorContext();
 
+        // Buscar al estudiante
+        var estudiante = context.Estudiantes.FirstOrDefault(e => e.IdEstudiante == id);
 
-            EstudianteDTO estudiante = new EstudianteDTO
-            {
-                IdEstudiante = id
-            };
-    estudianteService.Eliminar(estudiante);
+        if (estudiante == null)
+        {
+            return NotFound(new { message = "Estudiante no encontrado" });
         }
+
+        // Eliminar estudiante
+        context.Estudiantes.Remove(estudiante);
+        context.SaveChanges();
+
+        return Ok(new { message = "Estudiante eliminado correctamente" });
     }
+
+    [HttpGet("PorUsuario/{idUsuario}")]
+    public ActionResult<EstudianteDTO> ObtenerPorUsuario(int idUsuario)
+    {
+        var estudiante = estudianteService.ObtenerPorIdUsuario(idUsuario);
+
+        if (estudiante == null)
+            return NoContent();
+
+        return Ok(estudiante);
+    }
+
+
+
+
+
 }
