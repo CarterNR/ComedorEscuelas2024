@@ -9,13 +9,13 @@ namespace BackEnd.Services.Implementations
 {
     public class EstudianteService : IEstudianteService
     {
-        private readonly IUnidadDeTrabajo _unidad;
-        private readonly SisComedorContext _context;
+        IUnidadDeTrabajo Unidad;
+        SisComedorContext context;
 
         public EstudianteService(IUnidadDeTrabajo unidadDeTrabajo, SisComedorContext context)
         {
-            _unidad = unidadDeTrabajo;
-            _context = context;
+            this.Unidad = unidadDeTrabajo;
+            this.context = context;
         }
 
         #region Convertidores
@@ -59,36 +59,54 @@ namespace BackEnd.Services.Implementations
         public bool Agregar(EstudianteDTO estudiante)
         {
             var entity = Convertir(estudiante);
-            _unidad.EstudianteDAL.Add(entity);
-            return _unidad.Complete();
+            Unidad.EstudianteDAL.Add(entity);
+            return Unidad.Complete();
         }
 
-        public bool Editar(EstudianteDTO estudiante)
+       
+
+
+        public bool Editar(EstudianteDtoo estudiante)
+        {
+            var entidadExistente = context.Estudiantes.FirstOrDefault(e => e.IdUsuario == estudiante.IdUsuario);
+
+            if (entidadExistente == null)
+                return false;
+
+            // Solo actualizamos los campos permitidos
+            entidadExistente.Nombre = estudiante.Nombre.ToUpper();
+            entidadExistente.Cedula = estudiante.Cedula;
+            entidadExistente.IdEscuela = estudiante.IdEscuela;
+            entidadExistente.TiquetesRestantes = estudiante.TiquetesRestantes;
+            entidadExistente.NombreUsuario = estudiante.NombreUsuario;
+            entidadExistente.Clave = estudiante.Clave;
+
+            Unidad.EstudianteDAL.Update(entidadExistente);
+            return Unidad.Complete();
+        }
+
+
+
+
+
+
+
+        public bool Eliminar(EstudianteDTO estudiante)
         {
             var entity = Convertir(estudiante);
-            _unidad.EstudianteDAL.Update(entity);
-            return _unidad.Complete();
-        }
-
-        public void Eliminar(int id)
-        {
-            var estudiante = _unidad.EstudianteDAL.Get(id);
-            if (estudiante != null)
-            {
-                _unidad.EstudianteDAL.Remove(estudiante);
-                _unidad.Complete();
-            }
+            Unidad.EstudianteDAL.Remove(entity);
+            return Unidad.Complete();
         }
 
         public EstudianteDTO Obtener(int id)
         {
-            var entidad = _unidad.EstudianteDAL.Get(id);
+            var entidad = Unidad.EstudianteDAL.Get(id);
             return entidad != null ? Convertir(entidad) : null;
         }
 
         public List<EstudianteDTO> Obtener()
         {
-            return _unidad.EstudianteDAL.GetAll()
+            return Unidad.EstudianteDAL.GetAll()
                 .Select(e => Convertir(e))
                 .ToList();
         }
@@ -96,7 +114,7 @@ namespace BackEnd.Services.Implementations
 
         public EstudianteDTO ObtenerPorIdUsuario(int idUsuario)
         {
-            var estudiante = _context.Estudiantes.FirstOrDefault(e => e.IdUsuario == idUsuario);
+            var estudiante = context.Estudiantes.FirstOrDefault(e => e.IdUsuario == idUsuario);
 
             if (estudiante == null) return null;
 
@@ -104,6 +122,7 @@ namespace BackEnd.Services.Implementations
             {
                 IdEstudiante = estudiante.IdEstudiante,
                 Nombre = estudiante.Nombre,
+                
                 Cedula = estudiante.Cedula,
                 IdEscuela = estudiante.IdEscuela,
                 IdUsuario = estudiante.IdUsuario,
@@ -126,7 +145,10 @@ namespace BackEnd.Services.Implementations
                 // Mapeo de las propiedades de EstudianteDTO a Estudiante
                 IdEstudiante = estudianteDTO.IdEstudiante,
                 Cedula = estudianteDTO.Cedula,
-                Nombre = estudianteDTO.Nombre,
+
+                Nombre = estudianteDTO .Nombre,
+
+
                 RutaQR = estudianteDTO.RutaQR,
                 FechaUltimoRebajo = estudianteDTO.FechaUltimoRebajo
             };

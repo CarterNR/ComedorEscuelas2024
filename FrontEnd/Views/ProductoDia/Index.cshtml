@@ -30,10 +30,26 @@
                             <h4 class="mb-3">Productos del día</h4>
 
                         </div>
+
+                    </div>
+                </div>
+
+                <div class="col-lg-12">
+                    <form method="get" asp-action="ListaProductosDiaCompletos" class="form-inline mb-3 justify-content-md-end" id="searchForm">
+                        <input name="searchString" class="form-control mr-2" type="search" placeholder="Buscar producto día" value="@ViewBag.SearchString" id="searchInput">
+                        <button type="submit" class="btn btn-primary">Buscar</button>
+                    </form>
+                </div>
+
+                <div class="col-lg-12">
+                    <div class="d-flex flex-wrap align-items-stretch justify-content-between mb-4">
                         <a class="btn btn-primary add-list" asp-area="" asp-controller="ProductoDia" asp-action="Create">
                             <i class="las la-plus mr-3"></i><span>Nuevo producto</span>
                         </a>
-
+                        <button class="btn btn-primary d-flex align-items-center" asp-area="" asp-controller="Pedido" onclick="window.location.href='/ProductoDia/ListaProductosDiaCompletos'">
+                            <i class="las mr-1"></i><span>Productos del Dia Antiguos</span>
+                        </button>
+                        
                     </div>
                 </div>
                 <div class="col-lg-12">
@@ -42,7 +58,6 @@
                             <thead class="bg-white text-uppercase">
                                 <tr class="ligth ligth-data">
 
-                                    <th>ID Producto Día</th>
                                     <th>Producto</th>
                                     <th>Cantidad</th>
                                     <th>Fecha</th>
@@ -51,7 +66,7 @@
                                     <th>Opciones</th>
 
 
-                                    </th>
+                                    
                                     <th></th>
                                 </tr>
                             </thead>
@@ -59,9 +74,6 @@
                                 @foreach (var item in Model)
                                 {
                                 <tr>
-                                    <td>
-                                        @Html.DisplayFor(modelItem => item.IdProductoDia)
-                                    </td>
                                     <td>
                                        @Html.DisplayFor(modelItem => item.NombreProducto)
                                     </td>
@@ -98,35 +110,77 @@
                                             </div>
                                         </td>
                                 </tr>
-                        }
+                                }
                             </tbody>
                         </table>
                     </div>
+
+
+                    @if (ViewBag.TotalPages > 1)
+                    {
+                        <nav aria-label="Paginación">
+                            <ul class="pagination justify-content-between">
+                                <div class="text-end mt-1">
+                                    Mostrando @ViewBag.Mostrando de @ViewBag.TotalRegistros resultados
+                                </div>
+
+                                <ul class="pagination justify-content-end">
+                                    <li class="page-item @(ViewBag.CurrentPage == 1 ? "disabled" : "")">
+                                        <a class="page-link" href="@Url.Action("Index", new { page = ViewBag.CurrentPage - 1, searchString = ViewBag.SearchString })">Anterior</a>
+                                    </li>
+
+                                    @for (int i = 1; i <= ViewBag.TotalPages; i++)
+                                    {
+                                        <li class="page-item @(ViewBag.CurrentPage == i ? "active" : "")">
+                                            <a class="page-link" href="@Url.Action("Index", new { page = i, searchString = ViewBag.SearchString })">@i</a>
+                                        </li>
+                                    }
+
+                                    <li class="page-item @(ViewBag.CurrentPage == ViewBag.TotalPages ? "disabled" : "")">
+                                        <a class="page-link" href="@Url.Action("Index", new { page = ViewBag.CurrentPage + 1, searchString = ViewBag.SearchString })">Siguiente</a>
+                                    </li>
+                                </ul>
+
+
+
+
+                            </ul>
+                        </nav>
+                    }
+
+
                 </div>
             </div>
         </div>
         <!-- Page end  -->
     </div>
-    </div>
+    
 
     <!-- Backend Bundle JavaScript -->
     <script src="../assets/js/backend-bundle.min.js"></script>
-
-    <!-- Table Treeview JavaScript -->
     <script src="../assets/js/table-treeview.js"></script>
-
-    <!-- Chart Custom JavaScript -->
     <script src="../assets/js/customizer.js"></script>
-
-    <!-- Chart Custom JavaScript -->
     <script async src="../assets/js/chart-custom.js"></script>
-
-    <!-- app JavaScript -->
     <script src="../assets/js/app.js"></script>
 
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const searchInput = document.getElementById('searchInput');
+            const searchForm = document.getElementById('searchForm');
+            let previousValue = searchInput.value;
 
+            // Detectar cuando se limpia el campo (incluyendo la X nativa)
+            searchInput.addEventListener('input', function() {
+                // Si tenía contenido y ahora está vacío, enviar el form
+                if (previousValue !== '' && this.value === '') {
+                    searchForm.submit();
+                }
+                previousValue = this.value;
+            });
+        });
+    </script>
 
-
+ 
 </body>
 </html>
 

@@ -9,6 +9,7 @@ namespace DAL.Interfaces
 {
     public interface IEstudianteDAL : IDALGenerico<Estudiante>
     {
+        Estudiante GetByUsuario(int idUsuario);
 
     }
 }

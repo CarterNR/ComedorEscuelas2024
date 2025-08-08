@@ -1,13 +1,13 @@
-﻿@model IEnumerable<FrontEnd.Models.PedidoViewModel>
+﻿@model IEnumerable<FrontEnd.Models.ProductoDiaViewModel>
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "ListaProductosDiaCompletos";
 }
 
 <!DOCTYPE html>
 <html>
 <head>
-    
+
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <title>@ViewData["Title"]</title>
@@ -27,26 +27,28 @@
                 <div class="col-lg-12">
                     <div class="d-flex flex-wrap align-items-center justify-content-between mb-4">
                         <div>
-                            <h4 class="mb-3">Pedidos</h4>
+                            <h4 class="mb-3">Productos del día Antiguos</h4>
 
                         </div>
 
                     </div>
                 </div>
+
                 <div class="col-lg-12">
-                    <form method="get" asp-action="Index" class="form-inline mb-3 justify-content-md-end" id="searchForm">
-                        <input name="searchString" class="form-control mr-2" type="search" placeholder="Buscar pedido" value="@ViewBag.SearchString" id="searchInput">
+                    <form method="get" asp-action="ListaProductosDiaCompletos" class="form-inline mb-3 justify-content-md-end" id="searchForm">
+                        <input name="searchString" class="form-control mr-2" type="search" placeholder="Buscar producto día" value="@ViewBag.SearchString" id="searchInput">
                         <button type="submit" class="btn btn-primary">Buscar</button>
                     </form>
                 </div>
 
                 <div class="col-lg-12">
                     <div class="d-flex flex-wrap align-items-stretch justify-content-between mb-4">
-                        <a class="btn btn-primary add-list d-flex align-items-center" asp-area="" asp-controller="Pedido" asp-action="Create">
-                            <i class="las la-plus mr-3"></i><span>Nuevo pedido</span>
+                        <a class="btn btn-primary add-list" asp-area="" asp-controller="ProductoDia" asp-action="Create">
+                            <i class="las la-plus mr-3"></i><span>Nuevo producto</span>
                         </a>
-                        <button class="btn btn-primary d-flex align-items-center" asp-area="" asp-controller="Pedido" onclick="window.location.href='/Pedido/ListaPedidosCompletos'">
-                            <i class="las mr-1"></i><span>Pedidos Antiguos</span>
+
+                        <button class="btn btn-primary d-flex align-items-center" asp-area="" asp-controller="Pedido" onclick="window.location.href='/ProductoDia/Index'">
+                            <i class="las mr-1"></i><span>Productos del Dia Actuales</span>
                         </button>
                     </div>
                 </div>
@@ -56,14 +58,16 @@
                         <table class="data-table table mb-0 tbl-server-info">
                             <thead class="bg-white text-uppercase">
                                 <tr class="ligth ligth-data">
-                                  
 
-                                    <th>Fecha ingreso</th>
                                     <th>Producto</th>
                                     <th>Cantidad</th>
-                                    <th>Escuela</th>
+                                    <th>Fecha</th>
                                     <th>Estado</th>
+                                    <th>Escuela</th>
                                     <th>Opciones</th>
+
+
+
                                     <th></th>
                                 </tr>
                             </thead>
@@ -71,23 +75,37 @@
                                 @foreach (var item in Model)
                                 {
                                     <tr>
-                                        <td>@Html.DisplayFor(modelItem => item.FechaHoraIngreso)</td>
-                                        <td>@Html.DisplayFor(modelItem => item.NombreProducto)</td>
-                                        <td>@Html.DisplayFor(modelItem => item.Cantidad)</td>
-                                        <td>@Html.DisplayFor(modelItem => item.NombreEscuela)</td>
-                                        <td><div class="badge badge-success">@Html.DisplayFor(modelItem => item.EstadoPedido1)</div></td>
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item.NombreProducto)
+                                        </td>
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item.Cantidad)
+                                        </td>
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item.Fecha)
+                                        </td>
+                                        <td>
+                                            <div class="badge @(item.Estado ?? false ? "badge-success" : "badge-danger")">
+                                                @(item.Estado.HasValue ? (item.Estado.Value ? "Activo" : "Inactivo") : "Desconocido")
+                                            </div>
+
+                                        </td>
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item.NombreEscuela)
+                                        </td>
+
                                         <td>
                                             <div class="d-flex align-items-center list-action">
                                                 <a class="badge badge-info mr-2" data-toggle="tooltip" data-placement="top" title="Ver detalles"
-                                                   href="@Url.Action("Details", "Pedido", new { id = item.IdPedido })">
+                                                   href="@Url.Action("Details", "ProductoDia", new { id = item.IdProductoDia })">
                                                     <i class="ri-eye-line mr-0"></i>
                                                 </a>
                                                 <a class="badge bg-success mr-2" data-toggle="tooltip" data-placement="top" title="Editar"
-                                                   href="@Url.Action("Edit", "Pedido", new { id = item.IdPedido })">
+                                                   href="@Url.Action("Edit", "ProductoDia", new { id = item.IdProductoDia })">
                                                     <i class="ri-pencil-line mr-0"></i>
                                                 </a>
                                                 <a class="badge bg-warning mr-2" data-toggle="tooltip" data-placement="top" title="Borrar"
-                                                   href="@Url.Action("Delete", "Pedido", new { id = item.IdPedido })">
+                                                   href="@Url.Action("Delete", "ProductoDia", new { id = item.IdProductoDia })">
                                                     <i class="ri-delete-bin-line mr-0"></i>
                                                 </a>
                                             </div>
@@ -95,62 +113,56 @@
                                     </tr>
                                 }
                             </tbody>
-
                         </table>
-                       </div>
-
-                        @if (ViewBag.TotalPages > 1)
-                        {
-                            <nav aria-label="Paginación">
-                                <ul class="pagination justify-content-between">
-                                    <div class="text-end mt-1">
-                                        Mostrando @ViewBag.Mostrando de @ViewBag.TotalRegistros resultados
-                                    </div>
-
-                                    <ul class="pagination justify-content-end">
-                                        <li class="page-item @(ViewBag.CurrentPage == 1 ? "disabled" : "")">
-                                            <a class="page-link" href="@Url.Action("Index", new { page = ViewBag.CurrentPage - 1, searchString = ViewBag.SearchString })">Anterior</a>
-                                        </li>
-
-                                        @for (int i = 1; i <= ViewBag.TotalPages; i++)
-                                        {
-                                            <li class="page-item @(ViewBag.CurrentPage == i ? "active" : "")">
-                                                <a class="page-link" href="@Url.Action("Index", new { page = i, searchString = ViewBag.SearchString })">@i</a>
-                                            </li>
-                                        }
-
-                                        <li class="page-item @(ViewBag.CurrentPage == ViewBag.TotalPages ? "disabled" : "")">
-                                            <a class="page-link" href="@Url.Action("Index", new { page = ViewBag.CurrentPage + 1, searchString = ViewBag.SearchString })">Siguiente</a>
-                                        </li>
-                                    </ul>
-
-
-
-
-                                </ul>
-                            </nav>
-                        }
                     </div>
+
+                    @if (ViewBag.TotalPages > 1)
+                    {
+                        <nav aria-label="Paginación">
+                            <ul class="pagination justify-content-between">
+                                <div class="text-end mt-1">
+                                    Mostrando @ViewBag.Mostrando de @ViewBag.TotalRegistros resultados
+                                </div>
+
+                                <ul class="pagination justify-content-end">
+                                    <li class="page-item @(ViewBag.CurrentPage == 1 ? "disabled" : "")">
+                                        <a class="page-link" href="@Url.Action("ListaProductosDiaCompletos", new { page = ViewBag.CurrentPage - 1, searchString = ViewBag.SearchString })">Anterior</a>
+                                    </li>
+
+                                    @for (int i = 1; i <= ViewBag.TotalPages; i++)
+                                    {
+                                        <li class="page-item @(ViewBag.CurrentPage == i ? "active" : "")">
+                                            <a class="page-link" href="@Url.Action("ListaProductosDiaCompletos", new { page = i, searchString = ViewBag.SearchString })">@i</a>
+                                        </li>
+                                    }
+
+                                    <li class="page-item @(ViewBag.CurrentPage == ViewBag.TotalPages ? "disabled" : "")">
+                                        <a class="page-link" href="@Url.Action("ListaProductosDiaCompletos", new { page = ViewBag.CurrentPage + 1, searchString = ViewBag.SearchString })">Siguiente</a>
+                                    </li>
+                                </ul>
+
+
+
+
+                            </ul>
+                        </nav>
+                    }
+
+
                 </div>
             </div>
-            <!-- Page end  -->
         </div>
-   
+        <!-- Page end  -->
+    </div>
+
 
     <!-- Backend Bundle JavaScript -->
     <script src="../assets/js/backend-bundle.min.js"></script>
-
-    <!-- Table Treeview JavaScript -->
     <script src="../assets/js/table-treeview.js"></script>
-
-    <!-- Chart Custom JavaScript -->
     <script src="../assets/js/customizer.js"></script>
-
-    <!-- Chart Custom JavaScript -->
     <script async src="../assets/js/chart-custom.js"></script>
-
-    <!-- app JavaScript -->
     <script src="../assets/js/app.js"></script>
+
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const searchInput = document.getElementById('searchInput');
@@ -169,7 +181,6 @@
     </script>
 
 
-   
 
 </body>
 </html>

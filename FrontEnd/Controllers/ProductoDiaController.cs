@@ -4,7 +4,9 @@ using FrontEnd.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using System.Drawing.Printing;
 
 namespace FrontEnd.Controllers
 {
@@ -24,26 +26,166 @@ namespace FrontEnd.Controllers
         }
         // GET: ProductoDiaController
 
-       // [Authorize(Roles = "Admin, Producto")]
-        public ActionResult Index()
+        // [Authorize(Roles = "Admin, Producto")]
+        public ActionResult Index(string searchString, int page = 1, int pageSize = 8)
         {
+            // Obtener datos
             var listaProductoDia = _productodiaHelper.GetProductosDia();
-
             var productos = _productoHelper.GetProductos();
+            var escuelas = _escuelaHelper.GetEscuelas(); // Si usás escuelas también
 
+            // Enriquecer con nombre del producto y escuela
             foreach (var item in listaProductoDia)
             {
                 var producto = productos.FirstOrDefault(p => p.IdProducto == item.IdProducto);
                 if (producto != null)
                 {
-                    item.NombreProducto = producto.NombreProducto; 
+                    item.NombreProducto = producto.NombreProducto;
+                }
+
+                var escuela = escuelas.FirstOrDefault(e => e.IdEscuela == item.IdEscuela);
+                if (escuela != null)
+                {
+                    item.NombreEscuela = escuela.NombreEscuela;
                 }
             }
 
-            return View(listaProductoDia);
+            // Filtrar por fecha de hoy
+            var hoy = DateTime.Now.Date;
+            var listaFiltrada = listaProductoDia
+                .Where(p => p.Fecha.HasValue && p.Fecha.Value.Date == hoy)
+                .ToList();
+
+            // Búsqueda
+            if (!string.IsNullOrEmpty(searchString))
+            {
+                searchString = searchString.ToLower();
+                listaFiltrada = listaFiltrada.Where(p =>
+                    (p.NombreProducto != null && p.NombreProducto.ToLower().Contains(searchString)) ||
+                    (p.Cantidad.HasValue  && p.Cantidad.Value.ToString().Contains(searchString)) ||
+                    (p.Fecha.HasValue && p.Fecha.Value.ToString("yyyy-MM-dd").Contains(searchString)) ||
+                    (p.NombreEscuela != null && p.NombreEscuela.ToLower().Contains(searchString)) ||
+                    (p.Estado.ToString().ToLower().Contains(searchString))
+                ).ToList();
+            }
+
+            var totalItems = listaFiltrada.Count();
+            var items = listaFiltrada.Skip((page - 1) * pageSize).Take(pageSize).ToList();
+
+            ViewBag.TotalPages = (int)Math.Ceiling((double)totalItems / pageSize);
+            ViewBag.CurrentPage = page;
+            ViewBag.SearchString = searchString;
+
+            int TotalPages = ViewBag.TotalPages;
+
+
+            int totalRegistros = listaFiltrada.Count();
+            var datosPagina = listaFiltrada
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .ToList();
+
+
+
+            ViewBag.TotalRegistros = totalRegistros;
+            ViewBag.Mostrando = datosPagina.Count();
+
+
+            ViewBag.PaginaActual = page;
+            ViewBag.TotalPaginas = TotalPages;
+            ViewBag.TotalRegistros = totalRegistros;
+            ViewBag.TerminoBusqueda = searchString;
+
+
+            ViewBag.Mostrando = datosPagina.Count();
+
+
+
+            return View(items);
         }
 
-      //  [Authorize(Roles = "Admin, Producto")]
+
+
+
+        public ActionResult ListaProductosDiaCompletos(string searchString, int page = 1, int pageSize = 8)
+        {
+            int tamanioPagina = 8;
+
+            // Obtener datos
+            var listaProductoDia = _productodiaHelper.GetProductosDia();
+            var productos = _productoHelper.GetProductos();
+            var escuelas = _escuelaHelper.GetEscuelas(); // Si usás escuelas también
+
+            // Enriquecer con nombre del producto y escuela
+            foreach (var item in listaProductoDia)
+            {
+                var producto = productos.FirstOrDefault(p => p.IdProducto == item.IdProducto);
+                if (producto != null)
+                {
+                    item.NombreProducto = producto.NombreProducto;
+                }
+
+                var escuela = escuelas.FirstOrDefault(e => e.IdEscuela == item.IdEscuela);
+                if (escuela != null)
+                {
+                    item.NombreEscuela = escuela.NombreEscuela;
+                }
+            }
+
+            // Filtrar solo los productos agregados hoy
+            var hoy = DateTime.Now.Date; // Solo la fecha, sin hora
+            var listaFiltrada = listaProductoDia
+                .Where(p => p.Fecha.HasValue && p.Fecha.Value.Date != hoy)
+                .ToList();
+
+            // Búsqueda
+            if (!string.IsNullOrEmpty(searchString))
+            {
+                searchString = searchString.ToLower();
+                listaFiltrada = listaFiltrada.Where(p =>
+                    (p.NombreProducto != null && p.NombreProducto.ToLower().Contains(searchString)) ||
+                    (p.Cantidad.HasValue && p.Cantidad.Value.ToString().Contains(searchString)) ||
+                    (p.Fecha.HasValue && p.Fecha.Value.ToString("yyyy-MM-dd").Contains(searchString)) ||
+                    (p.NombreEscuela != null && p.NombreEscuela.ToLower().Contains(searchString)) ||
+                    (p.Estado.ToString().ToLower().Contains(searchString))
+                ).ToList();
+            }
+            var totalItems = listaFiltrada.Count();
+            var items = listaFiltrada.Skip((page - 1) * pageSize).Take(pageSize).ToList();
+
+            ViewBag.TotalPages = (int)Math.Ceiling((double)totalItems / pageSize);
+            ViewBag.CurrentPage = page;
+            ViewBag.SearchString = searchString;
+
+            int TotalPages = ViewBag.TotalPages;
+
+
+            int totalRegistros = listaFiltrada.Count();
+            var datosPagina = listaFiltrada
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .ToList();
+
+
+
+            ViewBag.TotalRegistros = totalRegistros;
+            ViewBag.Mostrando = datosPagina.Count();
+
+
+            ViewBag.PaginaActual = page;
+            ViewBag.TotalPaginas = TotalPages;
+            ViewBag.TotalRegistros = totalRegistros;
+            ViewBag.TerminoBusqueda = searchString;
+
+
+            ViewBag.Mostrando = datosPagina.Count();
+
+
+
+            return View(items);
+        }
+
+        //  [Authorize(Roles = "Admin, Producto")]
         // GET: ProductoDiaController/Details/5
         public ActionResult Details(int id)
         {

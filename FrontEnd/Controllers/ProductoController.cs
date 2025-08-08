@@ -28,10 +28,57 @@ namespace FrontEnd.Controllers
 
         // GET: Producto
 //        [Authorize(Roles = "Admin")]
-        public IActionResult Index()
+        public IActionResult Index(string searchString, int page = 1, int pageSize = 6)
         {
             var productos = _productoHelper.GetProductos();
-            return View(productos);
+            // Aplicar búsqueda si hay término de búsqueda
+            if (!string.IsNullOrEmpty(searchString))
+            {
+                searchString = searchString.ToLower();
+                productos = productos.Where(p =>
+                    (p.NombreProducto?.ToLower().Contains(searchString) ?? false) ||
+                    (p.Cantidad.HasValue && p.Cantidad.Value.ToString().Contains(searchString)) ||
+                    (p.Estado.ToString().ToLower().Contains(searchString)) ||
+                    (p.NombreProveedor?.ToLower().Contains(searchString) ?? false) ||
+                    (p.NombreProducto?.ToLower().Contains(searchString) ?? false) ||
+                    (p.NombreEscuela?.ToLower().Contains(searchString) ?? false))
+                    .ToList();
+            }
+
+            // Configurar paginación
+            var totalItems = productos.Count();
+            var items = productos.Skip((page - 1) * pageSize).Take(pageSize).ToList();
+
+            ViewBag.TotalPages = (int)Math.Ceiling((double)totalItems / pageSize);
+            ViewBag.CurrentPage = page;
+            ViewBag.SearchString = searchString;
+
+            int TotalPages = ViewBag.TotalPages;
+
+
+            int totalRegistros = productos.Count();
+            var datosPagina = productos
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .ToList();
+
+
+
+            ViewBag.TotalRegistros = totalRegistros;
+            ViewBag.Mostrando = datosPagina.Count();
+
+
+            ViewBag.PaginaActual = page;
+            ViewBag.TotalPaginas = TotalPages;
+            ViewBag.TotalRegistros = totalRegistros;
+            ViewBag.TerminoBusqueda = searchString;
+
+
+            ViewBag.Mostrando = datosPagina.Count();
+
+
+
+            return View(items);
         }
 
        // [Authorize(Roles = "Admin")]

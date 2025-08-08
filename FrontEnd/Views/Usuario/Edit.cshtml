@@ -41,17 +41,70 @@
                                 @Html.HiddenFor(model => model.IdUsuario)  @* Cambiar a hidden *@
 
 
-                                <div class="form-group">
+                                <div class="form-group mb-5">
                                     <label>Nombre de usuario</label>
                                     <input asp-for="NombreUsuario" class="form-control" />
                                     <span asp-validation-for="NombreUsuario" class="text-danger"></span>
                                 </div>
 
-                                <div class="form-group">
-                                    <label>Nombre Completo</label>
-                                    <input asp-for="NombreCompleto" class="form-control" />
+
+                                <!-- Campo oculto donde se juntará todo -->
+                                <div class="form-group" style="display:none;">
+                                    <input asp-for="NombreCompleto" class="form-control" id="nombreCompleto" />
                                     <span asp-validation-for="NombreCompleto" class="text-danger"></span>
                                 </div>
+
+
+
+
+
+
+                                <div class="row g-3">
+                                    <div class="col">
+                                        <div class="form-group">
+                                            <label class="control-label">Primer Nombre</label>
+                                            <input class="form-control" id="primerNombre" />
+                                            <span class="text-danger"></span>
+                                        </div>
+                                    </div>
+                                    <div class="col">
+                                        <div class="form-group">
+                                            <label class="control-label">Segundo Nombre</label>
+                                            <input class="form-control" id="segundoNombre" />
+                                            <span class="text-danger"></span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="row g-3 mb-4">
+                                    <div class="col">
+                                        <div class="form-group">
+                                            <label class="control-label">Primer Apellido</label>
+                                            <input class="form-control" id="primerApellido" />
+                                            <span class="text-danger"></span>
+                                        </div>
+                                    </div>
+                                    <div class="col">
+                                        <div class="form-group mb-4">
+                                            <label class="control-label">Segundo Apellido</label>
+                                            <input class="form-control" id="segundoApellido" />
+                                            <span class="text-danger"></span>
+                                        </div>
+                                    </div>
+                                </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
 
                                 <div class="form-group">
                                     <label for="IdTipoCedula">Tipo de Cédula</label>
@@ -168,6 +221,101 @@
     <script src="/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="/js/backend-bundle.min.js"></script>
     <script src="/js/app.js"></script>
+
+    <script>
+        function separarNombreCompletoAvanzado() {
+            const nombreCompleto = document.querySelector('input[name="NombreCompleto"]').value.trim();
+
+            if (nombreCompleto) {
+                // Limpiar espacios múltiples y dividir
+                const partes = nombreCompleto.replace(/\s+/g, ' ').split(' ');
+
+                // Limpiar campos primero
+                document.getElementById('primerApellido').value = '';
+                document.getElementById('segundoApellido').value = '';
+                document.getElementById('primerNombre').value = '';
+                document.getElementById('segundoNombre').value = '';
+
+                // Asignar según disponibilidad
+                switch (partes.length) {
+                    case 1:
+                        // Solo una palabra - asumimos que es primer apellido
+                        document.getElementById('primerApellido').value = partes[0];
+                        break;
+                    case 2:
+                        // Dos palabras - primer apellido y primer nombre
+                        document.getElementById('primerApellido').value = partes[0];
+                        document.getElementById('primerNombre').value = partes[1];
+                        break;
+                    case 3:
+                        // Tres palabras - primer apellido, segundo apellido, primer nombre
+                        document.getElementById('primerApellido').value = partes[0];
+                        document.getElementById('segundoApellido').value = partes[1];
+                        document.getElementById('primerNombre').value = partes[2];
+                        break;
+                    default:
+                        // Cuatro o más palabras - formato completo
+                        document.getElementById('primerApellido').value = partes[0];
+                        document.getElementById('segundoApellido').value = partes[1];
+                        document.getElementById('primerNombre').value = partes[2];
+                        document.getElementById('segundoNombre').value = partes.slice(3).join(' ');
+                        break;
+                }
+            }
+        }
+
+                document.addEventListener('DOMContentLoaded', function() {
+            const nombreCompletoInput = document.querySelector('input[name="NombreCompleto"]');
+
+            if (nombreCompletoInput) {
+                // Opción 1: Separar automáticamente cuando se pierde el foco
+                nombreCompletoInput.addEventListener('blur', separarNombreCompletoAvanzado);
+
+                // Opción 2: Separar en tiempo real (opcional, puede ser molesto)
+                // nombreCompletoInput.addEventListener('input', separarNombreCompletoAvanzado);
+            }
+        });
+
+                window.onload = function() {
+            separarNombreCompletoAvanzado();
+        };
+    </script>
+
+    <script>
+        const primerNombre = document.getElementById('primerNombre');
+        const segundoNombre = document.getElementById('segundoNombre');
+        const primerApellido = document.getElementById('primerApellido');
+        const segundoApellido = document.getElementById('segundoApellido');
+        const nombreCompleto = document.getElementById('nombreCompleto');
+
+
+
+        function actualizarNombreCompleto() {
+          const pn = primerNombre.value.trim();
+          const sn = segundoNombre.value.trim();
+          const pa = primerApellido.value.trim();
+          const sa = segundoApellido.value.trim();
+
+          const partes = [pa, sa, pn, sn].filter(x => x.length > 0);
+          nombreCompleto.value = partes.join(' ');
+        }
+
+
+
+
+        // Función combinada que actualiza ambos campos
+        function actualizarCampos() {
+            actualizarNombreCompleto();
+        }
+
+        // Event listeners corregidos - ahora llaman a la función combinada
+        primerNombre.addEventListener('input', actualizarCampos);
+        segundoNombre.addEventListener('input', actualizarCampos);
+        primerApellido.addEventListener('input', actualizarCampos);
+        segundoApellido.addEventListener('input', actualizarCampos);
+    </script>
+
+
 
 </body>
 </html>

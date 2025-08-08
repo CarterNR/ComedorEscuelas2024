@@ -1,5 +1,6 @@
 ﻿@{
     var nombreUsuario = Context.Session.GetString("NombreUsuario");
+    var idUsuario = Context.Session.GetInt32("IdUsuario");
     var idRol = Context.Session.GetInt32("IdRol");
     var autenticado = !string.IsNullOrEmpty(nombreUsuario);
     int? rol = Context.Session.GetInt32("IdRol");

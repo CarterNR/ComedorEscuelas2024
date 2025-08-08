@@ -1,6 +1,8 @@
 ﻿using BackEnd.DTO;
+using BackEnd.Services.Implementations;
 using BackEnd.Services.Interfaces;
 using Entities.Entities;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 [Route("api/[controller]")]
@@ -101,31 +103,36 @@ public class EstudianteController : ControllerBase
 
     // PUT api/<EstudianteController>/5
     [HttpPut]
-    public IActionResult Put([FromBody] EstudianteDTO estudiante)
+    public IActionResult Put([FromBody] EstudianteDtoo estudiante)
     {
-        estudianteService.Editar(estudiante);
-        return Ok(estudiante);
+        var actualizado = estudianteService.Editar(estudiante);
+
+        if (!actualizado)
+            return NotFound("Estudiante no encontrado para ese usuario.");
+
+        return Ok("Estudiante actualizado correctamente.");
     }
+
+
+
+
 
     // DELETE api/<EstudianteController>/5
     [HttpDelete("{id}")]
+    [AllowAnonymous]
     public IActionResult Delete(int id)
     {
-        using var context = new SisComedorContext();
-
-        // Buscar al estudiante
-        var estudiante = context.Estudiantes.FirstOrDefault(e => e.IdEstudiante == id);
-
-        if (estudiante == null)
+        try
         {
-            return NotFound(new { message = "Estudiante no encontrado" });
+            EstudianteDTO estudiante = new EstudianteDTO { IdEstudiante = id };
+            estudianteService.Eliminar(estudiante);
+            return NoContent(); // 204 Eliminado correctamente
+        }
+        catch (Exception ex)
+        {
+            return NotFound(); // o return StatusCode(500, ex.Message);
         }
 
-        // Eliminar estudiante
-        context.Estudiantes.Remove(estudiante);
-        context.SaveChanges();
-
-        return Ok(new { message = "Estudiante eliminado correctamente" });
     }
 
     [HttpGet("PorUsuario/{idUsuario}")]

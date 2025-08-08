@@ -23,7 +23,30 @@
         <div class="container-fluid">
             <div class="row">
                 <div class="col-lg-12">
+                    <div class="d-flex flex-wrap align-items-center justify-content-between mb-4">
+                        <div>
+                            <h4 class="mb-3">Estudiantes</h4>
+
+                        </div>
+
+                    </div>
+                </div>
+
+                <div class="col-lg-12">
                     <div class="table-responsive rounded mb-3">
+                        <div class="col-lg-12">
+                            <div class="d-flex flex-wrap align-items-stretch justify-content-end mb-4">
+                                <div>
+                                    <form method="get" asp-action="Listado" class="form-inline mb-3" id="searchForm">
+                                        <input name="searchString" class="form-control mr-2" type="search" placeholder="Buscar estudiante" value="@ViewBag.SearchString" id="searchInput">
+                                        <button type="submit" class="btn btn-primary">Buscar</button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                        
+
+
                         <table class="data-table table mb-0 tbl-server-info">
                             <thead class="bg-white text-uppercase">
                                 <tr class="ligth ligth-data">
@@ -68,6 +91,43 @@
                             </tbody>
                         </table>
                     </div>
+
+
+
+                    @if (ViewBag.TotalPages > 1)
+                    {
+                        <nav aria-label="Paginación">
+                            <ul class="pagination justify-content-between">
+                                <div class="text-end mt-1">
+                                    Mostrando @ViewBag.Mostrando de @ViewBag.TotalRegistros resultados
+                                </div>
+
+                                <ul class="pagination justify-content-end">
+                                    <li class="page-item @(ViewBag.CurrentPage == 1 ? "disabled" : "")">
+                                        <a class="page-link" href="@Url.Action("Listado", new { page = ViewBag.CurrentPage - 1, searchString = ViewBag.SearchString })">Anterior</a>
+                                    </li>
+
+                                    @for (int i = 1; i <= ViewBag.TotalPages; i++)
+                                    {
+                                        <li class="page-item @(ViewBag.CurrentPage == i ? "active" : "")">
+                                            <a class="page-link" href="@Url.Action("Listado", new { page = i, searchString = ViewBag.SearchString })">@i</a>
+                                        </li>
+                                    }
+
+                                    <li class="page-item @(ViewBag.CurrentPage == ViewBag.TotalPages ? "disabled" : "")">
+                                        <a class="page-link" href="@Url.Action("Listado", new { page = ViewBag.CurrentPage + 1, searchString = ViewBag.SearchString })">Siguiente</a>
+                                    </li>
+                                </ul>
+
+
+
+
+                            </ul>
+                        </nav>
+                    }
+
+
+
                 </div>
             </div>
         </div>
@@ -79,6 +139,24 @@
     <script src="../assets/js/customizer.js"></script>
     <script async src="../assets/js/chart-custom.js"></script>
     <script src="../assets/js/app.js"></script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const searchInput = document.getElementById('searchInput');
+            const searchForm = document.getElementById('searchForm');
+            let previousValue = searchInput.value;
+
+            // Detectar cuando se limpia el campo (incluyendo la X nativa)
+            searchInput.addEventListener('input', function() {
+                // Si tenía contenido y ahora está vacío, enviar el form
+                if (previousValue !== '' && this.value === '') {
+                    searchForm.submit();
+                }
+                previousValue = this.value;
+            });
+        });
+    </script>
+
 
 </body>
 </html>

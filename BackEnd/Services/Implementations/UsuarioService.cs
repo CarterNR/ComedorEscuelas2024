@@ -21,6 +21,48 @@ namespace BackEnd.Services.Implementations
             this.context = context;
         }
 
+        #region 
+        private Usuario Convertir(UsuarioDTO usuario)
+        {
+            return new Usuario
+            {
+                IdUsuario = usuario.IdUsuario,
+                NombreCompleto = usuario.NombreCompleto,
+                IdTipoCedula = usuario.IdTipoCedula,
+                Cedula = usuario.Cedula,
+                Telefono = usuario.Telefono,
+                Direccion = usuario.Direccion,
+                CorreoElectronico = usuario.CorreoElectronico,
+                Clave = usuario.Clave,
+                Estado = usuario.Estado,
+                IdEscuela = usuario.IdEscuela,
+                IdRol = usuario.IdRol,
+                NombreUsuario = usuario.NombreUsuario
+            };
+        }
+
+        private UsuarioDTO Convertir(Usuario usuario)
+        {
+            return new UsuarioDTO
+            {
+                IdUsuario = usuario.IdUsuario,
+                NombreCompleto = usuario.NombreCompleto,
+                IdTipoCedula = usuario.IdTipoCedula,
+                Cedula = usuario.Cedula,
+                Telefono = usuario.Telefono,
+                Direccion = usuario.Direccion,
+                CorreoElectronico = usuario.CorreoElectronico,
+                Clave = usuario.Clave,
+                Estado = usuario.Estado,
+                IdEscuela = usuario.IdEscuela,
+                IdRol = usuario.IdRol,
+                NombreUsuario = usuario.NombreUsuario
+
+            };
+        }
+        #endregion
+
+
         public UsuarioDTO ObtenerPorCredenciales(string nombreUsuario, string clave)
         {
             var usuario = context.Usuarios.FirstOrDefault(u =>
@@ -46,46 +88,7 @@ namespace BackEnd.Services.Implementations
         }
 
 
-        #region
-        private Usuario Convertir(UsuarioDTO usuario)
-        {
-            return new Usuario
-            {
-                IdUsuario = usuario.IdUsuario,
-                NombreCompleto = usuario.NombreCompleto,
-                IdTipoCedula = usuario.IdTipoCedula,
-                Cedula = usuario.Cedula,
-                Telefono = usuario.Telefono,
-                Direccion = usuario.Direccion,
-                CorreoElectronico = usuario.CorreoElectronico,
-                Clave = usuario.Clave,
-                Estado = usuario.Estado,
-                IdEscuela = usuario.IdEscuela,
-                IdRol = usuario.IdRol,
-                NombreUsuario = usuario.NombreUsuario
-            };
-        }
-
-         private UsuarioDTO Convertir(Usuario usuario)
-        {
-            return new UsuarioDTO
-            {
-                IdUsuario = usuario.IdUsuario,
-                NombreCompleto = usuario.NombreCompleto,
-                IdTipoCedula = usuario.IdTipoCedula,
-                Cedula = usuario.Cedula,
-                Telefono = usuario.Telefono,
-                Direccion = usuario.Direccion,
-                CorreoElectronico = usuario.CorreoElectronico,
-                Clave = usuario.Clave,
-                Estado = usuario.Estado,
-                IdEscuela = usuario.IdEscuela,
-                IdRol = usuario.IdRol,
-                NombreUsuario = usuario.NombreUsuario
-
-            };
-        }
-        #endregion
+       
 
 
         public bool Agregar(UsuarioDTO usuario)
@@ -149,12 +152,82 @@ namespace BackEnd.Services.Implementations
 
 
 
-        public bool Editar(UsuarioDTO usuario)
+        public bool Editar(UsuarioDTO usuarioEditado)
         {
-            var entity = Convertir(usuario);
-            Unidad.UsuarioDAL.Update(entity);
+            var usuarioOriginal = Unidad.UsuarioDAL.Get(usuarioEditado.IdUsuario);
+            if (usuarioOriginal == null)
+                throw new Exception("No se encontró el usuario original.");
+
+            bool cambioARolEstudiante = usuarioOriginal.IdRol != usuarioEditado.IdRol && usuarioEditado.IdRol == 3;
+            bool dejoDeSerEstudiante = usuarioOriginal.IdRol == 3 && usuarioEditado.IdRol != 3;
+
+            bool estabainactivo = usuarioOriginal.Estado == false && usuarioEditado.Estado == true && usuarioOriginal.IdRol == 3 && 
+                usuarioEditado.IdRol == 3 && dejoDeSerEstudiante == false && cambioARolEstudiante == false;
+
+            bool noCambioClave = usuarioOriginal.Clave == usuarioEditado.Clave;
+
+            var claveEncryptada = usuarioEditado.Clave;
+
+            if (noCambioClave != true)
+            {
+                claveEncryptada = BCrypt.Net.BCrypt.HashPassword(usuarioEditado.Clave);
+            }
+
+
+            // Aplicar cambios directamente al usuarioOriginal
+            usuarioOriginal.NombreCompleto = usuarioEditado.NombreCompleto.ToUpper();
+            usuarioOriginal.IdTipoCedula = usuarioEditado.IdTipoCedula;
+            usuarioOriginal.Cedula = usuarioEditado.Cedula;
+            usuarioOriginal.Clave = claveEncryptada;
+            usuarioOriginal.Telefono = usuarioEditado.Telefono;
+            usuarioOriginal.Direccion = usuarioEditado.Direccion;
+            usuarioOriginal.CorreoElectronico = usuarioEditado.CorreoElectronico;
+            usuarioOriginal.Estado = usuarioEditado.Estado;
+            usuarioOriginal.IdEscuela = usuarioEditado.IdEscuela;
+            usuarioOriginal.NombreUsuario = usuarioEditado.NombreUsuario;
+            
+            usuarioOriginal.IdRol = usuarioEditado.IdRol;
+            
+
+            Unidad.UsuarioDAL.Update(usuarioOriginal);
+
+            if (cambioARolEstudiante || estabainactivo)
+            {
+                var yaExiste = Unidad.EstudianteDAL.GetByUsuario(usuarioEditado.IdUsuario);
+                if (yaExiste == null)
+                {
+                    byte[] codigoQR = GenerarCodigoQR(usuarioEditado.Cedula);
+
+                    var estudiante = new Estudiante
+                    {
+                        Nombre = usuarioEditado.NombreCompleto,
+                        Cedula = usuarioEditado.Cedula,
+                        IdEscuela = usuarioEditado.IdEscuela,
+                        IdUsuario = usuarioEditado.IdUsuario,
+                        TiquetesRestantes = 5,
+                        NombreUsuario = usuarioEditado.NombreUsuario,
+                        Clave = usuarioEditado.Clave,
+                        RutaQR = codigoQR,
+                        FechaUltimoRebajo = DateTime.Now.Date
+                    };
+
+                    Unidad.EstudianteDAL.Add(estudiante);
+                }
+            }
+
+            if (dejoDeSerEstudiante)
+            {
+                var estudiante = Unidad.EstudianteDAL.GetByUsuario(usuarioEditado.IdUsuario);
+                if (estudiante != null)
+                {
+                    Unidad.EstudianteDAL.Remove(estudiante);
+                }
+            }
+
             return Unidad.Complete();
         }
+
+
 
         public bool Eliminar(UsuarioDTO usuario)
         {

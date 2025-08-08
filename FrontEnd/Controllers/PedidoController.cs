@@ -29,60 +29,132 @@ namespace FrontEnd.Controllers
 
         }
         // GET: PedidoController
-       // [Authorize(Roles = "Admin")]
-        public ActionResult Index()
+        // [Authorize(Roles = "Admin")]
+        public ActionResult Index(string searchString, int page = 1, int pageSize = 8)
         {
             var lista = _pedidoHelper.GetPedidos();
-
             var productos = _productoHelper.GetProductos();
-
-            foreach (var item in lista)
-            {
-                var producto = productos.FirstOrDefault(p => p.IdProducto == item.IdProducto);
-                if (producto != null)
-                {
-                    item.NombreProducto = producto.NombreProducto;
-                }
-            }
-
             var escuelas = _escuelaHelper.GetEscuelas();
-
-            foreach (var item in lista)
-            {
-                var escuela = escuelas.FirstOrDefault(p => p.IdEscuela == item.IdEscuela);
-                if (escuela != null)
-                {
-                    item.NombreEscuela = escuela.NombreEscuela;
-                }
-            }
-
             var usuarios = _usuarioHelper.GetUsuarios();
-
-            foreach (var item in lista)
-            {
-                var usuario = usuarios.FirstOrDefault(p => p.IdUsuario == item.IdUsuario);
-                if (usuario != null)
-                {
-                    item.NombreCompleto = usuario.NombreCompleto;
-                }
-            }
-
-
             var estadopedidos = _estadoPedidoHelper.GetEstadoPedidos();
 
             foreach (var item in lista)
             {
-                var estadopedido = estadopedidos.FirstOrDefault(p => p.IdEstadoPedido == item.IdEstadoPedido);
-                if (estadopedido != null)
-                {
-                    item.EstadoPedido1 = estadopedido.EstadoPedido1;
-                }
+                item.NombreProducto = productos.FirstOrDefault(p => p.IdProducto == item.IdProducto)?.NombreProducto;
+                item.NombreEscuela = escuelas.FirstOrDefault(e => e.IdEscuela == item.IdEscuela)?.NombreEscuela;
+                item.NombreCompleto = usuarios.FirstOrDefault(u => u.IdUsuario == item.IdUsuario)?.NombreCompleto;
+                item.EstadoPedido1 = estadopedidos.FirstOrDefault(e => e.IdEstadoPedido == item.IdEstadoPedido)?.EstadoPedido1;
             }
 
-            return View(lista);
+            // Filtrar pedidos del mes actual
+            var hoy = DateTime.Now;
+            var primerDiaMes = new DateTime(hoy.Year, hoy.Month, 1).Date;
+            var ultimoDiaMes = primerDiaMes.AddMonths(1).Date;
+            var listaFiltrada = lista
+                .Where(p => p.FechaHoraIngreso.HasValue &&
+                            p.FechaHoraIngreso.Value.Date >= primerDiaMes &&
+                            p.FechaHoraIngreso.Value.Date < ultimoDiaMes)
+                .ToList();
+
+            if (!string.IsNullOrEmpty(searchString))
+            {
+                searchString = searchString.ToLower();
+                listaFiltrada = listaFiltrada.Where(p =>
+                    (p.NombreProducto != null && p.NombreProducto.ToLower().Contains(searchString)) ||
+                    (p.NombreEscuela != null && p.NombreEscuela.ToLower().Contains(searchString)) ||
+                    (p.NombreCompleto != null && p.NombreCompleto.ToLower().Contains(searchString)) ||
+                    (p.EstadoPedido1 != null && p.EstadoPedido1.ToLower().Contains(searchString)) ||
+                    (p.FechaHoraIngreso.HasValue && p.FechaHoraIngreso.Value.ToString("yyyy-MM-dd").Contains(searchString))
+                ).ToList();
+            }
+
+            var totalItems = listaFiltrada.Count();
+            var items = listaFiltrada.Skip((page - 1) * pageSize).Take(pageSize).ToList();
+
+            ViewBag.TotalPages = (int)Math.Ceiling((double)totalItems / pageSize);
+            ViewBag.CurrentPage = page;
+            ViewBag.SearchString = searchString;
+
+            int TotalPages = ViewBag.TotalPages;
+
+
+            int totalRegistros = listaFiltrada.Count();
+            var datosPagina = listaFiltrada
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .ToList();
+
+
+
+            ViewBag.TotalRegistros = totalRegistros;
+            ViewBag.Mostrando = datosPagina.Count();
+
+
+            ViewBag.PaginaActual = page;
+            ViewBag.TotalPaginas = TotalPages;
+            ViewBag.TotalRegistros = totalRegistros;
+            ViewBag.TerminoBusqueda = searchString;
+
+
+            ViewBag.Mostrando = datosPagina.Count();
+
+
+
+            return View(items);
         }
 
-      //  [Authorize(Roles = "Admin")]
+
+        public ActionResult ListaPedidosCompletos(string searchString, int page = 1, int pageSize = 8)
+        {
+            var lista = _pedidoHelper.GetPedidos();
+            var productos = _productoHelper.GetProductos();
+            var escuelas = _escuelaHelper.GetEscuelas();
+            var usuarios = _usuarioHelper.GetUsuarios();
+            var estadopedidos = _estadoPedidoHelper.GetEstadoPedidos();
+
+            foreach (var item in lista)
+            {
+                item.NombreProducto = productos.FirstOrDefault(p => p.IdProducto == item.IdProducto)?.NombreProducto;
+                item.NombreEscuela = escuelas.FirstOrDefault(e => e.IdEscuela == item.IdEscuela)?.NombreEscuela;
+                item.NombreCompleto = usuarios.FirstOrDefault(u => u.IdUsuario == item.IdUsuario)?.NombreCompleto;
+                item.EstadoPedido1 = estadopedidos.FirstOrDefault(e => e.IdEstadoPedido == item.IdEstadoPedido)?.EstadoPedido1;
+            }
+
+            var hoy = DateTime.Now;
+            var primerDiaMes = new DateTime(hoy.Year, hoy.Month, 1).Date;
+            var ultimoDiaMes = primerDiaMes.AddMonths(1).Date;
+
+            var listaFiltrada = lista
+                .Where(p => !p.FechaHoraIngreso.HasValue ||
+                            p.FechaHoraIngreso.Value.Date < primerDiaMes ||
+                            p.FechaHoraIngreso.Value.Date >= ultimoDiaMes)
+                .ToList();
+
+            if (!string.IsNullOrEmpty(searchString))
+            {
+                searchString = searchString.ToLower();
+                listaFiltrada = listaFiltrada.Where(p =>
+                    (p.NombreProducto != null && p.NombreProducto.ToLower().Contains(searchString)) ||
+                    (p.NombreEscuela != null && p.NombreEscuela.ToLower().Contains(searchString)) ||
+                    (p.NombreCompleto != null && p.NombreCompleto.ToLower().Contains(searchString)) ||
+                    (p.EstadoPedido1 != null && p.EstadoPedido1.ToLower().Contains(searchString)) ||
+                    (p.FechaHoraIngreso.HasValue && p.FechaHoraIngreso.Value.ToString("yyyy-MM-dd").Contains(searchString))
+                ).ToList();
+            }
+
+            var totalItems = listaFiltrada.Count();
+            var items = listaFiltrada.Skip((page - 1) * pageSize).Take(pageSize).ToList();
+
+            ViewBag.TotalPages = (int)Math.Ceiling((double)totalItems / pageSize);
+            ViewBag.CurrentPage = page;
+            ViewBag.SearchString = searchString;
+
+            return View(items);
+        }
+
+
+
+        //  [Authorize(Roles = "Admin")]
         // GET: PedidoController/Details/5
         public ActionResult Details(int id)
         {
@@ -161,10 +233,12 @@ namespace FrontEnd.Controllers
                         throw new Exception("El producto no existe.");
                     }
 
-                 
+                    if(pedido.IdEstadoPedido == 3)
+                    {
+                        producto.Cantidad += pedido.Cantidad;
+                        _productoHelper.Update(producto);
+                    }
 
-                    producto.Cantidad += pedido.Cantidad;
-                    _productoHelper.Update(producto);
 
                     return RedirectToAction("Index");
                 }
@@ -254,35 +328,25 @@ namespace FrontEnd.Controllers
         {
             try
             {
+                var producto = _productoHelper.GetProducto(pedido.IdProducto);
+
+                if (pedido.IdEstadoPedido == 3)
+                {
+                    producto.Cantidad += pedido.Cantidad;
+                    _productoHelper.Update(producto);
+                }
+
                 var originalPedido = _pedidoHelper.GetPedido(pedido.IdPedido);
                 if (originalPedido == null)
                 {
                     return NotFound();
                 }
 
-                int diferencia = (pedido.Cantidad ?? 0) - (originalPedido.Cantidad ?? 0);
-
-                var producto = _productoHelper.GetProducto(pedido.IdProducto);
                 if (producto == null)
                 {
                     return NotFound();
                 }
-
-                if (diferencia < 0)
-                {
-                    int cantidadARestar = Math.Abs(diferencia); 
-                    if (producto.Cantidad < cantidadARestar)
-                    {
-                        ModelState.AddModelError("Cantidad", "No hay suficiente inventario para realizar este cambio.");
-                        return View(CargarListasParaVista(pedido)); 
-                    }
-
-                    producto.Cantidad -= cantidadARestar;
-                }
-                else if (diferencia > 0)
-                {
-                    producto.Cantidad += diferencia;
-                }
+                
 
                 _productoHelper.Update(producto);
 

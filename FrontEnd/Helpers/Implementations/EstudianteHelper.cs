@@ -87,24 +87,22 @@ namespace FrontEnd.Helpers.Implementations
                     Console.WriteLine($"Error al obtener datos de la escuela: {ex.Message}");
                 }
 
-                resultado.Add(
-                            new EstudianteViewModel
-                            {
+                resultado.Add(new EstudianteViewModel
+                {
 
-                                IdEstudiante = item.IdEstudiante,
-                                Nombre = item.Nombre,
-                                Cedula = item.Cedula,
-                                IdEscuela = item.IdEscuela,
-                                TiquetesRestantes = item.TiquetesRestantes,
-                                IdUsuario = item.IdUsuario,
-                                RutaQR = item.RutaQR,
-                                NombreUsuario = item.NombreUsuario,
-                                Clave = item.Clave,
-                                FechaUltimoRebajo = item.FechaUltimoRebajo,
-                                NombreEscuela = escuela?.NombreEscuela ?? "Desconocido"
+                    IdEstudiante = item.IdEstudiante,
+                    Nombre = item.Nombre,
+                    Cedula = item.Cedula,
+                    IdEscuela = item.IdEscuela,
+                    TiquetesRestantes = item.TiquetesRestantes,
+                    IdUsuario = item.IdUsuario,
+                    RutaQR = item.RutaQR,
+                    NombreUsuario = item.NombreUsuario,
+                    Clave = item.Clave,
+                    FechaUltimoRebajo = item.FechaUltimoRebajo,
+                    NombreEscuela = escuela?.NombreEscuela ?? "Desconocido"
 
-                            }
-                    );
+                });
             }
             return resultado;
 

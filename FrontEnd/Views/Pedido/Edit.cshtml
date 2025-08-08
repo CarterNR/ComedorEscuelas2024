@@ -2,6 +2,7 @@
 
 @{
     ViewData["Title"] = "Editar";
+    var idUsuario = Context.Session.GetInt32("IdUsuario");
 }
 
 <!DOCTYPE html>
@@ -42,7 +43,7 @@
 
                                 <div class="form-group">
                                     <label>ID Pedido</label>
-                                    <input asp-for="IdPedido" class="form-control" />
+                                    <input asp-for="IdPedido" class="form-control" readonly />
                                     <span asp-validation-for="IdPedido" class="text-danger"></span>
                                 </div>
 
@@ -60,7 +61,7 @@
 
                                 <div class="form-group">
                                     <label>Fecha y Hora de Ingreso</label>
-                                    <input asp-for="FechaHoraIngreso" class="form-control" />
+                                    <input asp-for="FechaHoraIngreso" class="form-control" readonly />
                                     <span asp-validation-for="FechaHoraIngreso" class="text-danger"></span>
                                 </div>
 
@@ -81,7 +82,7 @@
                                 }
                                 <div class="form-group d-none">
                                     <label asp-for="IdUsuario" class="form-label"></label>
-                                    <input asp-for="IdUsuario" class="form-control" value="1" />
+                                    <input asp-for="IdUsuario" class="form-control" value="@idUsuario" />
                                     <span asp-validation-for="IdUsuario" class="text-danger"></span>
                                 </div>
 

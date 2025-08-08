@@ -26,25 +26,41 @@
                         <div>
                             <h4 class="mb-3">Productos</h4>
                         </div>
-                        <a class="btn btn-primary add-list" asp-action="Create">
-                            <i class="las la-plus mr-3"></i><span>Nuevo Producto</span>
-                        </a>
                     </div>
                 </div>
+
+
                 <div class="col-lg-12">
                     <div class="table-responsive rounded mb-3">
+
+
+                        <div class="col-lg-12">
+                            <div class="d-flex flex-wrap align-items-stretch justify-content-between mb-4">
+                                
+                                <a class="btn btn-primary add-list mb-3" asp-action="Create">
+                                    <i class="las la-plus mr-3"></i><span>Nuevo Producto</span>
+                                </a>
+
+                                <div>
+                                    <form method="get" asp-action="Index" class="form-inline mb-3" id="searchForm">
+                                        <input name="searchString" class="form-control mr-2" type="search" placeholder="Buscar producto" value="@ViewBag.SearchString" id="searchInput">
+                                        <button type="submit" class="btn btn-primary">Buscar</button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+
+
+                        
                         <table class="data-table table mb-0 tbl-server-info">
                             <thead class="bg-white text-uppercase">
                                 <tr class="ligth ligth-data">
-                                    <th>@Html.DisplayNameFor(model => model.IdProducto)</th>
                                     <th>@Html.DisplayNameFor(model => model.NombreProducto)</th>
                                     <th>@Html.DisplayNameFor(model => model.Cantidad)</th>
                                     <th>@Html.DisplayNameFor(model => model.Imagen)</th>
                                     <th>@Html.DisplayNameFor(model => model.Estado)</th>
                                     <th>@Html.DisplayNameFor(model => model.IdProveedor)</th>
                                     <th>@Html.DisplayNameFor(model => model.IdEscuela)</th>
-                                    <th>@Html.DisplayNameFor(model => model.NombreProveedor)</th>
-                                    <th>@Html.DisplayNameFor(model => model.NombreEscuela)</th>
                                     <th>Opciones</th>
                                 </tr>
                             </thead>
@@ -52,7 +68,6 @@
                                 @foreach (var item in Model)
                                 {
                                     <tr>
-                                        <td>@Html.DisplayFor(modelItem => item.IdProducto)</td>
                                         <td>@Html.DisplayFor(modelItem => item.NombreProducto)</td>
                                         <td>@Html.DisplayFor(modelItem => item.Cantidad)</td>
                                         <td>
@@ -73,8 +88,6 @@
                                                 @(item.Estado.HasValue ? (item.Estado.Value ? "Activo" : "Inactivo") : "Desconocido")
                                             </div>
                                         </td>
-                                        <td>@Html.DisplayFor(modelItem => item.IdProveedor)</td>
-                                        <td>@Html.DisplayFor(modelItem => item.IdEscuela)</td>
                                         <td>@Html.DisplayFor(modelItem => item.NombreProveedor)</td>
                                         <td>@Html.DisplayFor(modelItem => item.NombreEscuela)</td>
                                         <td>
@@ -98,6 +111,39 @@
                             </tbody>
                         </table>
                     </div>
+
+                    @if (ViewBag.TotalPages > 1)
+                    {
+                        <nav aria-label="Paginación">
+                            <ul class="pagination justify-content-between">
+                                <div class="text-end mt-1">
+                                    Mostrando @ViewBag.Mostrando de @ViewBag.TotalRegistros resultados
+                                </div>
+
+                                <ul class="pagination justify-content-end">
+                                    <li class="page-item @(ViewBag.CurrentPage == 1 ? "disabled" : "")">
+                                        <a class="page-link" href="@Url.Action("Index", new { page = ViewBag.CurrentPage - 1, searchString = ViewBag.SearchString })">Anterior</a>
+                                    </li>
+
+                                    @for (int i = 1; i <= ViewBag.TotalPages; i++)
+                                    {
+                                        <li class="page-item @(ViewBag.CurrentPage == i ? "active" : "")">
+                                            <a class="page-link" href="@Url.Action("Index", new { page = i, searchString = ViewBag.SearchString })">@i</a>
+                                        </li>
+                                    }
+
+                                    <li class="page-item @(ViewBag.CurrentPage == ViewBag.TotalPages ? "disabled" : "")">
+                                        <a class="page-link" href="@Url.Action("Index", new { page = ViewBag.CurrentPage + 1, searchString = ViewBag.SearchString })">Siguiente</a>
+                                    </li>
+                                </ul>
+
+
+
+
+                            </ul>
+                        </nav>
+                    }
+
                 </div>
             </div>
         </div>
@@ -109,6 +155,22 @@
     <script src="../assets/js/customizer.js"></script>
     <script async src="../assets/js/chart-custom.js"></script>
     <script src="../assets/js/app.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const searchInput = document.getElementById('searchInput');
+            const searchForm = document.getElementById('searchForm');
+            let previousValue = searchInput.value;
+
+            // Detectar cuando se limpia el campo (incluyendo la X nativa)
+            searchInput.addEventListener('input', function() {
+                // Si tenía contenido y ahora está vacío, enviar el form
+                if (previousValue !== '' && this.value === '') {
+                    searchForm.submit();
+                }
+                previousValue = this.value;
+            });
+        });
+    </script>
 
 </body>
 </html>

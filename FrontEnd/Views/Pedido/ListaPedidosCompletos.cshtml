@@ -1,7 +1,7 @@
 ﻿@model IEnumerable<FrontEnd.Models.PedidoViewModel>
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "ListaPedidosCompletos";
 }
 
 <!DOCTYPE html>
@@ -27,27 +27,30 @@
                 <div class="col-lg-12">
                     <div class="d-flex flex-wrap align-items-center justify-content-between mb-4">
                         <div>
-                            <h4 class="mb-3">Pedidos</h4>
+                            <h4 class="mb-3">Pedidos Antiguos</h4>
 
                         </div>
 
                     </div>
                 </div>
+
                 <div class="col-lg-12">
-                    <form method="get" asp-action="Index" class="form-inline mb-3 justify-content-md-end" id="searchForm">
+                    <form method="get" asp-action="ListaPedidosCompletos" class="form-inline mb-3 justify-content-md-end" id="searchForm">
                         <input name="searchString" class="form-control mr-2" type="search" placeholder="Buscar pedido" value="@ViewBag.SearchString" id="searchInput">
                         <button type="submit" class="btn btn-primary">Buscar</button>
                     </form>
                 </div>
+
 
                 <div class="col-lg-12">
                     <div class="d-flex flex-wrap align-items-stretch justify-content-between mb-4">
                         <a class="btn btn-primary add-list d-flex align-items-center" asp-area="" asp-controller="Pedido" asp-action="Create">
                             <i class="las la-plus mr-3"></i><span>Nuevo pedido</span>
                         </a>
-                        <button class="btn btn-primary d-flex align-items-center" asp-area="" asp-controller="Pedido" onclick="window.location.href='/Pedido/ListaPedidosCompletos'">
-                            <i class="las mr-1"></i><span>Pedidos Antiguos</span>
+                        <button class="btn btn-primary d-flex align-items-center" asp-area="" asp-controller="Pedido" onclick="window.location.href='/Pedido/Index'">
+                            <i class="las mr-1"></i><span>Pedidos Actuales</span>
                         </button>
+                        
                     </div>
                 </div>
                 <div class="col-lg-12">
@@ -99,37 +102,38 @@
                         </table>
                        </div>
 
-                        @if (ViewBag.TotalPages > 1)
-                        {
-                            <nav aria-label="Paginación">
-                                <ul class="pagination justify-content-between">
-                                    <div class="text-end mt-1">
-                                        Mostrando @ViewBag.Mostrando de @ViewBag.TotalRegistros resultados
-                                    </div>
 
-                                    <ul class="pagination justify-content-end">
-                                        <li class="page-item @(ViewBag.CurrentPage == 1 ? "disabled" : "")">
-                                            <a class="page-link" href="@Url.Action("Index", new { page = ViewBag.CurrentPage - 1, searchString = ViewBag.SearchString })">Anterior</a>
+                    @if (ViewBag.TotalPages > 1)
+                    {
+                        <nav aria-label="Paginación">
+                            <ul class="pagination justify-content-between">
+                                <div class="text-end mt-1">
+                                    Mostrando @ViewBag.Mostrando de @ViewBag.TotalRegistros resultados
+                                </div>
+
+                                <ul class="pagination justify-content-end">
+                                    <li class="page-item @(ViewBag.CurrentPage == 1 ? "disabled" : "")">
+                                        <a class="page-link" href="@Url.Action("ListaPedidosCompletos", new { page = ViewBag.CurrentPage - 1, searchString = ViewBag.SearchString })">Anterior</a>
+                                    </li>
+
+                                    @for (int i = 1; i <= ViewBag.TotalPages; i++)
+                                    {
+                                        <li class="page-item @(ViewBag.CurrentPage == i ? "active" : "")">
+                                            <a class="page-link" href="@Url.Action("ListaPedidosCompletos", new { page = i, searchString = ViewBag.SearchString })">@i</a>
                                         </li>
+                                    }
 
-                                        @for (int i = 1; i <= ViewBag.TotalPages; i++)
-                                        {
-                                            <li class="page-item @(ViewBag.CurrentPage == i ? "active" : "")">
-                                                <a class="page-link" href="@Url.Action("Index", new { page = i, searchString = ViewBag.SearchString })">@i</a>
-                                            </li>
-                                        }
-
-                                        <li class="page-item @(ViewBag.CurrentPage == ViewBag.TotalPages ? "disabled" : "")">
-                                            <a class="page-link" href="@Url.Action("Index", new { page = ViewBag.CurrentPage + 1, searchString = ViewBag.SearchString })">Siguiente</a>
-                                        </li>
-                                    </ul>
-
-
-
-
+                                    <li class="page-item @(ViewBag.CurrentPage == ViewBag.TotalPages ? "disabled" : "")">
+                                        <a class="page-link" href="@Url.Action("ListaPedidosCompletos", new { page = ViewBag.CurrentPage + 1, searchString = ViewBag.SearchString })">Siguiente</a>
+                                    </li>
                                 </ul>
-                            </nav>
-                        }
+
+
+
+
+                            </ul>
+                        </nav>
+                    }
                     </div>
                 </div>
             </div>
@@ -139,18 +143,11 @@
 
     <!-- Backend Bundle JavaScript -->
     <script src="../assets/js/backend-bundle.min.js"></script>
-
-    <!-- Table Treeview JavaScript -->
     <script src="../assets/js/table-treeview.js"></script>
-
-    <!-- Chart Custom JavaScript -->
     <script src="../assets/js/customizer.js"></script>
-
-    <!-- Chart Custom JavaScript -->
     <script async src="../assets/js/chart-custom.js"></script>
-
-    <!-- app JavaScript -->
     <script src="../assets/js/app.js"></script>
+
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const searchInput = document.getElementById('searchInput');
@@ -167,6 +164,7 @@
             });
         });
     </script>
+    
 
 
    

@@ -252,5 +252,60 @@ namespace FrontEnd.Helpers.Implementations
             return usuario;
         }
 
+
+        public void Desactivar(int id)
+        {
+            try
+            {
+                // Obtener el usuario actual
+                var usuario = GetUsuario(id);
+                if (usuario == null)
+                {
+                    throw new Exception("Usuario no encontrado");
+                }
+
+                if (usuario.Estado == false)
+                {
+                    throw new Exception("El usuario ya está inactivo");
+                }
+
+                // Cambiar el estado a false (inactivo)
+                usuario.Estado = false;
+
+                // Actualizar el usuario
+                HttpResponseMessage response = _ServiceRepository.PutResponse("api/Usuario", Convertir(usuario));
+                if (!response.IsSuccessStatusCode)
+                {
+                    var errorContent = response.Content.ReadAsStringAsync().Result;
+                    throw new Exception("Error al desactivar el usuario: " + errorContent);
+                }
+
+                // Si el usuario es estudiante, también manejar el registro de estudiante si es necesario
+                if (usuario.IdRol == 3) // Asumiendo que 3 es el rol de estudiante
+                {
+                    HttpResponseMessage estudianteResponse = _ServiceRepository.GetResponse("api/Estudiante/porUsuario/" + id);
+                    if (estudianteResponse.IsSuccessStatusCode)
+                    {
+                        var estudianteContent = estudianteResponse.Content.ReadAsStringAsync().Result;
+
+                        if (!string.IsNullOrWhiteSpace(estudianteContent) && estudianteContent != "null")
+                        {
+                            var estudiante = JsonConvert.DeserializeObject<Estudiante>(estudianteContent);
+
+                            if (estudiante != null)
+                            {
+                                // Aquí puedes agregar lógica adicional para el estudiante si es necesario
+                                Console.WriteLine($"Usuario estudiante {usuario.NombreUsuario} ha sido desactivado");
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Error al desactivar el usuario: " + ex.Message);
+            }
+        }
+
     }
 }

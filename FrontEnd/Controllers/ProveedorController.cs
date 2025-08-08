@@ -20,10 +20,64 @@ namespace FrontEnd.Controllers
         }
         // GET: ProveedorController
        // [Authorize(Roles = "Admin")]
-        public ActionResult Index()
+        public ActionResult Index(string searchString, int page = 1, int pageSize = 8)
         {
             var lista = _proveedorHelper.GetProveedores();
-            return View(lista);
+            var escuelas = _escuelaHelper.GetEscuelas();
+
+            foreach (var item in lista)
+            {
+                item.NombreEscuela = escuelas.FirstOrDefault(e => e.IdEscuela == item.IdEscuela)?.NombreEscuela;
+            }
+
+
+            if (!string.IsNullOrEmpty(searchString))
+            {
+                searchString = searchString.ToLower();
+                lista = lista.Where(p =>
+                    (p.NombreProveedor != null && p.NombreProveedor.ToLower().Contains(searchString)) ||
+                    (p.Telefono != null && p.Telefono.ToLower().Contains(searchString)) ||
+                    (p.CorreoElectronico != null && p.CorreoElectronico.ToLower().Contains(searchString)) ||
+                    (p.Direccion != null && p.Direccion.ToLower().Contains(searchString)) ||
+                    (p.Estado.ToString().ToLower().Contains(searchString)) ||
+                    (p.NombreEscuela != null && p.NombreEscuela.ToLower().Contains(searchString))
+                ).ToList();
+            }
+
+                var totalItems = lista.Count();
+                var items = lista.Skip((page - 1) * pageSize).Take(pageSize).ToList();
+
+                ViewBag.TotalPages = (int)Math.Ceiling((double)totalItems / pageSize);
+                ViewBag.CurrentPage = page;
+                ViewBag.SearchString = searchString;
+
+                int TotalPages = ViewBag.TotalPages;
+
+
+                int totalRegistros = lista.Count();
+                var datosPagina = lista
+                    .Skip((page - 1) * pageSize)
+                    .Take(pageSize)
+                    .ToList();
+
+
+
+                ViewBag.TotalRegistros = totalRegistros;
+                ViewBag.Mostrando = datosPagina.Count();
+
+
+                ViewBag.PaginaActual = page;
+                ViewBag.TotalPaginas = TotalPages;
+                ViewBag.TotalRegistros = totalRegistros;
+                ViewBag.TerminoBusqueda = searchString;
+
+
+                ViewBag.Mostrando = datosPagina.Count();
+
+
+
+                return View(items);
+            
         }
 
         // GET: ProveedorController/Details/5

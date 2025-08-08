@@ -40,16 +40,58 @@
                                 <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
 
-                                <div class="form-group">
-                                    <label asp-for="NombreUsuario" class="control-label"></label>
-                                    <input asp-for="NombreUsuario" class="form-control" />
-                                    <span asp-validation-for="NombreUsuario" class="text-danger"></span>
+
+                               
+                                <div class="row g-3">
+                                    <div class="col">
+                                        <div class="form-group">
+                                            <label class="control-label">Primer Nombre</label>
+                                            <input class="form-control" id="primerNombre" />
+                                            <span class="text-danger"></span>
+                                        </div>
+                                    </div>
+                                    <div class="col">
+                                        <div class="form-group">
+                                            <label class="control-label">Segundo Nombre</label>
+                                            <input class="form-control" id="segundoNombre" />
+                                            <span class="text-danger"></span>
+                                        </div>
+                                    </div>
                                 </div>
-                                <div class="form-group">
+
+                                <div class="row g-3 mb-4">
+                                    <div class="col">
+                                        <div class="form-group">
+                                            <label class="control-label">Primer Apellido</label>
+                                            <input class="form-control" id="primerApellido" />
+                                            <span class="text-danger"></span>
+                                        </div>
+                                    </div>
+                                    <div class="col">
+                                        <div class="form-group mb-4">
+                                            <label class="control-label">Segundo Apellido</label>
+                                            <input class="form-control" id="segundoApellido" />
+                                            <span class="text-danger"></span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Campo oculto donde se juntará todo -->
+                                <div class="form-group" style="display:none;">
                                     <label asp-for="NombreCompleto" class="control-label"></label>
-                                    <input asp-for="NombreCompleto" class="form-control" />
+                                    <input asp-for="NombreCompleto" class="form-control" id="nombreCompleto" />
                                     <span asp-validation-for="NombreCompleto" class="text-danger"></span>
                                 </div>
+
+
+
+
+
+
+
+
+
+
    
 
                                 <div class="form-group">
@@ -60,9 +102,18 @@
 
                                 <div class="form-group">
                                     <label asp-for="Cedula" class="control-label"></label>
-                                    <input asp-for="Cedula" class="form-control" />
+                                    <input asp-for="Cedula" class="form-control" id="cedula" />
                                     <span asp-validation-for="Cedula" class="text-danger"></span>
                                 </div>
+
+
+                                <div class="form-group" style="display:none;">
+                                    <label asp-for="NombreUsuario" class="control-label"></label>
+                                    <input asp-for="NombreUsuario" class="form-control" id="nombreUsuario" />
+                                    <span asp-validation-for="NombreUsuario" class="text-danger"></span>
+                                </div>
+
+
                                 <div class="form-group">
                                     <label asp-for="Clave" class="control-label"></label>
                                     <input asp-for="Clave" class="form-control" />
@@ -84,12 +135,9 @@
                                     <span asp-validation-for="CorreoElectronico" class="text-danger"></span>
                                 </div>
 
-                                <div class="form-group">
-                                    <label asp-for="Estado" class="control-label"></label>
-                                    <select asp-for="Estado" class="form-control">
-                                        <option value="True">Activo</option>
-                                        <option value="False">Inactivo</option>
-                                    </select>
+                                <div class="form-group d-none">
+                                    <label asp-for="Estado" class="form-label"></label>
+                                    <input asp-for="Estado" class="form-control" value="true" />
                                     <span asp-validation-for="Estado" class="text-danger"></span>
                                 </div>
 
@@ -130,6 +178,59 @@
     <script src="/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="/js/backend-bundle.min.js"></script>
     <script src="/js/app.js"></script>
+    <script>
+        const primerNombre = document.getElementById('primerNombre');
+        const segundoNombre = document.getElementById('segundoNombre');
+        const primerApellido = document.getElementById('primerApellido');
+        const segundoApellido = document.getElementById('segundoApellido');
+        const cedula = document.getElementById('cedula');
+        const nombreCompleto = document.getElementById('nombreCompleto');
+        
+        
+
+        function actualizarNombreCompleto() {
+          const pn = primerNombre.value.trim();
+          const sn = segundoNombre.value.trim();
+          const pa = primerApellido.value.trim();
+          const sa = segundoApellido.value.trim();
+
+          const partes = [pa, sa, pn, sn].filter(x => x.length > 0);
+          nombreCompleto.value = partes.join(' ');
+        }
+
+        function actualizarUsuario() {
+          const pn = primerNombre.value.trim();
+          const pa = primerApellido.value.trim();
+          const ce = cedula.value.trim();
+
+          const pl = pn.length > 0 ? pn[0] : '';
+          const ul = ce.length >= 5 ? ce.slice(-5) : '';
+
+          const partes = [pl, pa, ul].filter(x => x.length > 0);
+          nombreUsuario.value = partes.join('');
+        }
+
+
+
+        // Función combinada que actualiza ambos campos
+        function actualizarCampos() {
+            actualizarNombreCompleto();
+            actualizarUsuario();
+        }
+
+        // Event listeners corregidos - ahora llaman a la función combinada
+        primerNombre.addEventListener('input', actualizarCampos);
+        segundoNombre.addEventListener('input', actualizarCampos);
+        primerApellido.addEventListener('input', actualizarCampos);
+        segundoApellido.addEventListener('input', actualizarCampos);
+        cedula.addEventListener('input', actualizarCampos);
+    </script>
+
+    
+
+    
+
+
 
 </body>
 </html>

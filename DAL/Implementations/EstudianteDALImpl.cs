@@ -1,5 +1,6 @@
 ﻿using DAL.Interfaces;
 using Entities.Entities;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,5 +17,11 @@ namespace DAL.Implementations
         {
             this.context = context;
         }
+
+        public Estudiante GetByUsuario(int idUsuario)
+        {
+            return context.Estudiantes.FirstOrDefault(e => e.IdUsuario == idUsuario);
+        }
+
     }
 }
