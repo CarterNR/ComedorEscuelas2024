@@ -138,7 +138,7 @@ namespace BackEnd.Services.Implementations
 
         private byte[] GenerarCodigoQR(string cedula)
         {
-            string datosQR = $"http://192.168.0.10:5153/Visual/Escanear/{cedula}";
+            string datosQR = $"http://192.168.0.17:5153/Visual/Escanear/{cedula}";
 
             using (var qrGenerator = new QRCodeGenerator())
             {

@@ -6,7 +6,7 @@ using System.Text.Json;
 
 namespace FrontEnd.Controllers
 {
-    [RoleAuth(1)] // Solo rol Administrador para funciones de visualización
+   // [RoleAuth(1)] // Solo rol Administrador para funciones de visualización
     public class VisualController : Controller
     {
         private readonly IHttpClientFactory _clientFactory;
@@ -20,7 +20,7 @@ namespace FrontEnd.Controllers
         public async Task<IActionResult> Escanear(string cedula)
         {
             var client = _clientFactory.CreateClient();
-            var response = await client.GetAsync($"http://192.168.0.10:5273/api/Estudiante/Escanear/{cedula}");
+            var response = await client.GetAsync($"http://192.168.0.17:5273/api/Estudiante/Escanear/{cedula}");
 
             if (response.IsSuccessStatusCode)
             {
