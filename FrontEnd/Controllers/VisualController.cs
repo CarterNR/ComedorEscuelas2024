@@ -1,10 +1,12 @@
 ﻿using FrontEnd.Helpers.Implementations;
 using FrontEnd.Helpers.Interfaces;
+using FrontEnd.Attributes;
 using Microsoft.AspNetCore.Mvc;
 using System.Text.Json;
 
 namespace FrontEnd.Controllers
 {
+    [RoleAuth(1)] // Solo rol Administrador para funciones de visualización
     public class VisualController : Controller
     {
         private readonly IHttpClientFactory _clientFactory;

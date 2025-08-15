@@ -1,11 +1,13 @@
 ﻿using FrontEnd.ApiModels;
 using FrontEnd.Helpers.Interfaces;
 using FrontEnd.Models;
+using FrontEnd.Attributes;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FrontEnd.Controllers
 {
+    [RoleAuth(1)] // Solo rol Administrador
     public class RegisterController : Controller
     {
         private readonly ISecurityHelper securityHelper;

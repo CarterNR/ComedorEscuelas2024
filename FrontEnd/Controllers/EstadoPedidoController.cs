@@ -1,11 +1,13 @@
 ﻿using FrontEnd.Helpers.Implementations;
 using FrontEnd.Helpers.Interfaces;
 using FrontEnd.Models;
+using FrontEnd.Attributes;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FrontEnd.Controllers
 {
+    [RoleAuth(1)] // Solo rol Administrador
     public class EstadoPedidoController : Controller
     {
         IEstadoPedidoHelper _estadopedidoHelper;

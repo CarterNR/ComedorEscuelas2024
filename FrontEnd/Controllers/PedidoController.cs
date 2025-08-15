@@ -2,6 +2,7 @@
 using FrontEnd.Helpers.Implementations;
 using FrontEnd.Helpers.Interfaces;
 using FrontEnd.Models;
+using FrontEnd.Attributes;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -10,6 +11,7 @@ using System.Reflection;
 
 namespace FrontEnd.Controllers
 {
+    [RoleAuth(1, 2)] // Rol Administrador y Escuela
     public class PedidoController : Controller
     {
         IPedidoHelper _pedidoHelper;

@@ -1,6 +1,7 @@
 ﻿using FrontEnd.Helpers.Implementations;
 using FrontEnd.Helpers.Interfaces;
 using FrontEnd.Models;
+using FrontEnd.Attributes;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -41,10 +42,13 @@ namespace FrontEnd.Controllers
                 HttpContext.Session.SetString("NombreUsuario", usuario.NombreUsuario);
                 HttpContext.Session.SetInt32("IdRol", usuario.IdRol);
 
-                if (usuario.IdRol == 1)
+                if (usuario.IdRol == 1) // Administrador
                     return RedirectToAction("Index", "Home");
 
-                if (usuario.IdRol == 3)
+                if (usuario.IdRol == 2) // Escuela
+                    return RedirectToAction("Index", "ProductoDia");
+
+                if (usuario.IdRol == 3) // Estudiante
                 {
                     var estudiante = _estudianteHelper.GetEstudiantePorUsuario(usuario.IdUsuario);
 
@@ -81,10 +85,21 @@ namespace FrontEnd.Controllers
         }
 
 
+        [HttpPost]
+        [HttpGet]
         public IActionResult Logout()
         {
+            // Limpiar toda la sesión
             HttpContext.Session.Clear();
-            return RedirectToAction("Login");
+            
+            // Opcional: También limpiar cookies si se están usando
+            foreach (var cookie in Request.Cookies.Keys)
+            {
+                Response.Cookies.Delete(cookie);
+            }
+            
+            // Redirigir al login
+            return RedirectToAction("Login", "Login");
         }
     }
 }

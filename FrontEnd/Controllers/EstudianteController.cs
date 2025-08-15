@@ -1,6 +1,7 @@
 ﻿using FrontEnd.Helpers.Implementations;
 using FrontEnd.Helpers.Interfaces;
 using FrontEnd.Models;
+using FrontEnd.Attributes;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -24,7 +25,8 @@ namespace FrontEnd.Controllers
             _usuarioHelper = usuarioHelper;
         }
 
-        // GET: UsuarioController
+        // GET: UsuarioController - Solo estudiantes pueden acceder
+        [RoleAuth(3)] // Solo rol estudiante
         public IActionResult Index()
         {
             int? idUsuario = HttpContext.Session.GetInt32("IdUsuario");
@@ -46,7 +48,8 @@ namespace FrontEnd.Controllers
             return View(estudiante);
         }
 
-        // GET: UsuarioController
+        // GET: UsuarioController - Solo admin puede ver listado
+        [RoleAuth(1)] // Solo rol Administrador
         public ActionResult Listado(string searchString, int page = 1, int pageSize = 8)
         {
             var lista = _estudianteHelper.GetEstudiantes();
@@ -98,6 +101,7 @@ namespace FrontEnd.Controllers
 
         }
 
+        [RoleAuth(3)] // Solo rol estudiante
         public IActionResult VerPorCedula(string cedula)
         {
             var estudiante = _estudianteHelper.GetEstudiantePorCedula(cedula);
@@ -112,7 +116,8 @@ namespace FrontEnd.Controllers
         }
 
 
-        // GET: EstudianteController/Details/5
+        // GET: EstudianteController/Details/5 - Solo admin
+        [RoleAuth(1)] // Solo rol Administrador
         public ActionResult Details(int id)
         {
             var estudiante = _estudianteHelper.GetEstudiante(id);
@@ -124,15 +129,17 @@ namespace FrontEnd.Controllers
         }
 
 
-        // GET: EstudianteController/Create
+        // GET: EstudianteController/Create - Solo admin
+        [RoleAuth(1)] // Solo rol Administrador
         public ActionResult Create()
         {
             return View();
         }
 
-        // POST: EstudianteController/Create
+        // POST: EstudianteController/Create - Solo admin
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [RoleAuth(1)] // Solo rol Administrador
         public ActionResult Create(EstudianteViewModel estudiante)
         {
             try
@@ -149,7 +156,8 @@ namespace FrontEnd.Controllers
 
 
         // TU MÉTODO EDIT EXISTENTE (mantenerlo como está)
-        // GET: EstudianteController/Edit/5
+        // GET: EstudianteController/Edit/5 - Solo admin
+        [RoleAuth(1)] // Solo rol Administrador
         public ActionResult Edit(int id)
         {
             var estudiante = _estudianteHelper.GetEstudiante(id);
@@ -168,7 +176,8 @@ namespace FrontEnd.Controllers
         }
 
         // NUEVO MÉTODO: Editar estudiante por IdUsuario
-        // GET: EstudianteController/EditByUsuario/5
+        // GET: EstudianteController/EditByUsuario/5 - Solo admin
+        [RoleAuth(1)] // Solo rol Administrador
         public ActionResult EditByUsuario(int idUsuario)
         {
             var estudiante = _estudianteHelper.GetEstudiantePorUsuario(idUsuario);
@@ -198,6 +207,7 @@ namespace FrontEnd.Controllers
         // MODIFICAR TU MÉTODO POST EXISTENTE
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [RoleAuth(1)] // Solo rol Administrador
         public ActionResult Edit(EstudianteViewModel estudiante)
         {
             try
@@ -269,7 +279,8 @@ namespace FrontEnd.Controllers
 
 
 
-        // GET: EstudianteController/Delete/5
+        // GET: EstudianteController/Delete/5 - Solo admin
+        [RoleAuth(1)] // Solo rol Administrador
         public ActionResult Delete(int id)
         {
             var estudiante = _estudianteHelper.GetEstudiante(id);
@@ -284,8 +295,9 @@ namespace FrontEnd.Controllers
         }
 
 
-        // POST: EstudianteController/Delete/5
+        // POST: EstudianteController/Delete/5 - Solo admin
         [HttpPost, ActionName("Delete")]
+        [RoleAuth(1)] // Solo rol Administrador
         public IActionResult DeleteConfirmed(int id, int idusuario)
         {
             try

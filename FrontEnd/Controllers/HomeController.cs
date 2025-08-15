@@ -3,6 +3,7 @@
 using FrontEnd.Helpers.Interfaces;
 using FrontEnd.Helpers.Implementations;
 using FrontEnd.Models;
+using FrontEnd.Attributes;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
@@ -10,7 +11,7 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace FrontEnd.Controllers
 {
-   // [Authorize]
+    [RoleAuth(1)] // Solo rol Administrador
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
@@ -24,7 +25,7 @@ namespace FrontEnd.Controllers
 
         public IActionResult Index()
         {
-            var productos = _productoHelper.GetProductos(); // Obtén los productos
+            var productos = _productoHelper.GetProductos(); // Obtï¿½n los productos
             return View(productos); // Pasa los productos al modelo de la vista
         }
 
